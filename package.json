@@ -1,0 +1,32 @@
+{
+  "name": "remark-plugins",
+  "version": "1.0.0",
+  "description": "A potpourri of remark plugins used to process .mdx files",
+  "main": "index.js",
+  "scripts": {
+    "test": "jest"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/hashicorp/remark-plugins.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/hashicorp/remark-plugins/issues"
+  },
+  "homepage": "https://github.com/hashicorp/remark-plugins#readme",
+  "devDependencies": {
+    "jest": "^24.8.0",
+    "mdast-util-to-string": "^1.0.6",
+    "remark": "^10.0.1",
+    "remark-html": "^9.0.0"
+  },
+  "dependencies": {
+    "github-slugger": "^1.2.1",
+    "remark-autolink-headings": "^5.2.0",
+    "remark-slug": "^5.1.1",
+    "unist-util-visit": "^1.4.1"
+  }
+}

@@ -1,0 +1,3 @@
+# Autolinked Headings
+
+More info about plugin...
