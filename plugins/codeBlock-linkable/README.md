@@ -1,3 +1,3 @@
-# Linkable Headings
+# Linkable Code Blocks
 
 More info about plugin...
