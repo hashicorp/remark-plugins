@@ -1,3 +1,0 @@
-# Linkable Code Blocks
-
-More info about plugin...
