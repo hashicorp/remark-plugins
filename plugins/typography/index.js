@@ -1,9 +1,9 @@
 const visit = require('unist-util-visit')
 
-module.exports = function hashicorpTypography() {
-  return function transformer(ast) {
+module.exports = function typographyPlugin() {
+  return function transformer(tree) {
     // Add typography classes to headings
-    visit(ast, 'heading', node => {
+    visit(tree, 'heading', node => {
       const data = node.data || (node.data = {})
       const props = data.hProperties || (data.hProperties = {})
 
@@ -34,8 +34,8 @@ module.exports = function hashicorpTypography() {
     })
 
     // Add typography classes to list items
-    visit(ast, 'list', ast => {
-      ast.children.map(li => {
+    visit(tree, 'list', node => {
+      node.children.map(li => {
         const data = li.data || (li.data = {})
         const props = data.hProperties || (data.hProperties = {})
         data.id = 'g-type-body'
