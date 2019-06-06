@@ -1,11 +1,9 @@
 {
-  "name": "remark-plugins",
+  "name": "@hashicorp/remark-plugins",
   "description": "A potpourri of remark plugins used to process .mdx files",
-  "version": "1.0.0",
+  "version": "0.0.0",
   "author": "Kevin Pruett",
-  "bugs": {
-    "url": "https://github.com/hashicorp/remark-plugins/issues"
-  },
+  "bugs": "https://github.com/hashicorp/remark-plugins/issues",
   "contributors": [
     "Jeff Escalante"
   ],
@@ -17,6 +15,7 @@
     "unist-util-visit": "^1.4.1"
   },
   "devDependencies": {
+    "@mdx-js/mdx": "^1.0.20",
     "@types/jest": "^24.0.13",
     "jest": "^24.8.0",
     "mdast-util-to-string": "^1.0.6",
@@ -27,10 +26,10 @@
   "keywords": [],
   "license": "MPL-2.0",
   "main": "index.js",
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/hashicorp/remark-plugins.git"
+  "publishConfig": {
+    "access": "public"
   },
+  "repository": "https://github.com/hashicorp/remark-plugins",
   "scripts": {
     "test": "jest --verbose"
   }
