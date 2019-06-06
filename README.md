@@ -24,7 +24,7 @@ The `typography` plugin adds css classes to certain typographical elements so th
 
 ## Usage
 
-Each of the plugins are exposed as the default export from this module and can be used as any other remark plugin would be normally. For example, with raw mdx:
+Each of the plugins are individually exposed from the default export from this module and can be used as any other remark plugin would be normally. For example, with raw mdx:
 
 ```js
 const mdx = require('@mdx-js/mdx')
@@ -32,6 +32,17 @@ const {typography, headingLinkable} = require('@hashicorp/remark-plugins')
 
 console.log(mdx.sync('some markdown content', {
   remarkPlugins: [typography, headingLinkable]
+})
+```
+
+If you'd like to use all of the plugins in one shot, which is typically the case with this module, an array of all the plugins is returned from the `allPlugins` export, as such:
+
+```js
+const mdx = require('@mdx-js/mdx')
+const {allPlugins} = require('@hashicorp/remark-plugins')
+
+console.log(mdx.sync('some markdown content', {
+  remarkPlugins: allPlugins
 })
 ```
 
