@@ -19,7 +19,7 @@ module.exports = function inlineCodeLinkablePlugin() {
 
           // Wrap link element around child <code> node
           pNode.children = pNode.children.map(node => {
-            return is(node, codeNode)
+            return is(codeNode, node)
               ? {
                   type: 'link',
                   url: `#${codeSlug}`,

@@ -19,7 +19,7 @@ module.exports = function paragraphCustomAlertsPlugin() {
 
             // Wrap matched nodes with <div> (containing proper attributes)
             parent.children = parent.children.map(node => {
-              return is(node, pNode)
+              return is(pNode, node)
                 ? {
                     type: 'wrapper',
                     children: [node],
