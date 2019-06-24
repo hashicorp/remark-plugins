@@ -5,11 +5,14 @@ describe('inlineCode-linkable', () => {
   describe('basic fixture - two list items; one linkable', () => {
     const processor = remark().use(codeBlockLinkable)
     const ast = processor.runSync(
-      processor.parse('- first\n- `code` here is some code')
+      processor.parse(
+        '- first\n- `code` here is some code\n- should not link this `codeBlock`'
+      )
     )
 
     const firstListItem = ast.children[0].children[0]
     const secondListItem = ast.children[0].children[1]
+    const thirdListItem = ast.children[0].children[2]
 
     it('should add an id to an <li> that contains <code>', () => {
       expect(secondListItem.data.hProperties.id).toEqual('inlinecode-code')
@@ -30,6 +33,10 @@ describe('inlineCode-linkable', () => {
       expect(secondListItem.data.hProperties.id).toEqual(
         secondListItem.children[0].children[0].url.slice(1)
       )
+    })
+
+    it('should *not* link <li> where <code> appears outside of first position', () => {
+      expect(thirdListItem.data).not.toBeDefined()
     })
   })
 

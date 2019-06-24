@@ -8,7 +8,9 @@ module.exports = function inlineCodeLinkablePlugin() {
   return function transformer(tree) {
     visit(tree, 'listItem', liNode => {
       visit(liNode, 'paragraph', pNode => {
-        visit(pNode, 'inlineCode', codeNode => {
+        // Perform node reconstruction when code appears in first position
+        if (is(pNode.children[0], 'inlineCode')) {
+          const codeNode = pNode.children[0]
           // Construct an id/slug based on value of <code> node
           const codeSlug = slugger.slug(`inlinecode-${codeNode.value}`)
 
@@ -18,17 +20,13 @@ module.exports = function inlineCodeLinkablePlugin() {
           props.id = codeSlug
 
           // Wrap link element around child <code> node
-          pNode.children = pNode.children.map(node => {
-            return is(codeNode, node)
-              ? {
-                  type: 'link',
-                  url: `#${codeSlug}`,
-                  title: null,
-                  children: [node]
-                }
-              : node
-          })
-        })
+          pNode.children[0] = {
+            type: 'link',
+            url: `#${codeSlug}`,
+            title: null,
+            children: [pNode.children[0]]
+          }
+        }
       })
     })
   }
