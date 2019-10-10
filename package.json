@@ -1,7 +1,7 @@
 {
   "name": "@hashicorp/remark-plugins",
   "description": "A potpourri of remark plugins used to process .mdx files",
-  "version": "0.5.0",
+  "version": "0.5.1",
   "author": "Kevin Pruett",
   "bugs": "https://github.com/hashicorp/remark-plugins/issues",
   "contributors": [
