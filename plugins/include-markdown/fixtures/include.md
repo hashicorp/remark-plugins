@@ -1,3 +1,5 @@
-hi i come from an **included file**
+include/before
 
-yay!
+@include 'nested/include2.md'
+
+include/after

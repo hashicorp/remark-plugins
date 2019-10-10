@@ -21,7 +21,7 @@ module.exports = function includeMarkdownPlugin({ resolveFrom } = {}) {
       )
       let includeContents
       try {
-        includeContents = readSync(includePath)
+        includeContents = readSync(includePath, 'utf8')
       } catch (err) {
         throw new Error(
           `The @include file path at ${includePath} was not found.\n\nInclude Location: ${file.path}:${node.position.start.line}:${node.position.start.column}`
@@ -29,8 +29,10 @@ module.exports = function includeMarkdownPlugin({ resolveFrom } = {}) {
       }
 
       // return the file contents in place of the @include
-
-      return remark().parse(includeContents).children
+      // this takes a couple steps because we allow recursive includes
+      const processor = remark().use(includeMarkdownPlugin, { resolveFrom })
+      const ast = processor.parse(includeContents)
+      return processor.runSync(ast, includeContents).children
     })
   }
 }
