@@ -9,19 +9,19 @@
   ],
   "dependencies": {
     "github-slugger": "^1.2.1",
-    "remark-autolink-headings": "^5.2.0",
-    "remark-slug": "^5.1.1",
+    "remark-autolink-headings": "^5.2.1",
+    "remark-slug": "^5.1.2",
     "unist-util-flatmap": "^1.0.0",
-    "unist-util-is": "^3.0.0",
-    "unist-util-visit": "^1.4.1"
+    "unist-util-is": "^4.0.0",
+    "unist-util-visit": "^2.0.0"
   },
   "devDependencies": {
-    "@mdx-js/mdx": "^1.0.20",
-    "@types/jest": "^24.0.13",
-    "jest": "^24.8.0",
+    "@mdx-js/mdx": "^1.5.1",
+    "@types/jest": "^24.0.18",
+    "jest": "^24.9.0",
     "mdast-util-to-string": "^1.0.6",
-    "remark": "^10.0.1",
-    "remark-html": "^9.0.0",
+    "remark": "^11.0.1",
+    "remark-html": "^10.0.0",
     "to-vfile": "^6.0.0"
   },
   "homepage": "https://github.com/hashicorp/remark-plugins#readme",

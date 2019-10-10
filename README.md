@@ -6,6 +6,10 @@ A potpourri of [remark](https://github.com/remarkjs/remark) plugins used by [Has
 
 [MDX](https://mdxjs.com) uses [remark](https://github.com/remarkjs/remark) internally to process and transform markdown via [plugins](https://github.com/remarkjs/remark/blob/master/doc/plugins.md#list-of-plugins). We use MDX to process markdown content to build out our docs, learning guides, and write rich content from our CMS. This set of plugins ensures that written markdown is translated properly into markup.
 
+### Include Markdown
+
+The `includeMarkdown` plugin gives authors the ability to use a directive like `@include "filename.md" to import markdown from a separate file, like a partial. See [its readme](plugins/include-markdown/README.md) for more details.
+
 ### Linkable Headings
 
 The `headingLinkable` plugin adds anchor links to our headings so that users are able to easily link to a specific heading even if it is further down the page. See [its readme](plugins/heading-linkable/README.md) for more details.
