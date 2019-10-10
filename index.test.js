@@ -5,5 +5,6 @@ it('api works as intended', () => {
   expect(remarkPlugins.inlineCodeLinkable).toBeTruthy()
   expect(remarkPlugins.paragraphCustomAlerts).toBeTruthy()
   expect(remarkPlugins.typography).toBeTruthy()
-  expect(remarkPlugins.allPlugins.length).toBe(4)
+  expect(remarkPlugins.includeMarkdown).toBeTruthy()
+  expect(remarkPlugins.allPlugins.length).toBe(5)
 })
