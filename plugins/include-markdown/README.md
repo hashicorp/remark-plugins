@@ -31,6 +31,16 @@ Disclaimer: This content is not guaranteed to be in any way useful or truthful.
 <p>The rest of the content...</p>
 ```
 
+### Options
+
+This plugin accepts one optional config option: `resolveFrom`. If you pass this option along with a path, all partials will resolve from the path that was passed in. For example:
+
+```js
+remark().use(includeMarkdown, { resolveFrom: path.join(__dirname, 'partials') })
+```
+
+With this config, you'd be able to put all your includes in a partials folder and require only based on the filename regardless of the location of your markdown file.
+
 ### Ordering
 
 It's important to note that remark applies transforms in the order that they are called. If you want your other plugins to also apply to the contents of includeed files, you need to make sure that you apply the include content plugin **before all other plugins**. For example, let's say you have two plugins, one is this one to include markdown, and the other capitalizes all text, because yelling makes you more authoritative and also it's easier to read capitalized text. If you want to ensure that your includeed content is also capitalized, here's how you'd order your plugins:
