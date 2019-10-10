@@ -9,9 +9,9 @@ module.exports = function includeMarkdownPlugin({ resolveFrom } = {}) {
       if (node.type !== 'paragraph') return [node]
 
       // detect an `@include` statement
-      const includeMatch = node.children[0].value.match(
-        /^@include\s['"](.*)['"]$/
-      )
+      const includeMatch =
+        node.children[0].value &&
+        node.children[0].value.match(/^@include\s['"](.*)['"]$/)
       if (!includeMatch) return [node]
 
       // read the file contents
