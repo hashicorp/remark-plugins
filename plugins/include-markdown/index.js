@@ -3,7 +3,7 @@ const remark = require('remark')
 const flatMap = require('unist-util-flatmap')
 const { readSync } = require('to-vfile')
 
-module.exports = function includeMarkdownPlugin() {
+module.exports = function includeMarkdownPlugin({ resolveFrom } = {}) {
   return function transformer(tree, file) {
     return flatMap(tree, node => {
       if (node.type !== 'paragraph') return [node]
@@ -15,7 +15,10 @@ module.exports = function includeMarkdownPlugin() {
       if (!includeMatch) return [node]
 
       // read the file contents
-      const includePath = path.join(file.dirname, includeMatch[1])
+      const includePath = path.join(
+        resolveFrom || file.dirname,
+        includeMatch[1]
+      )
       let includeContents
       try {
         includeContents = readSync(includePath)
