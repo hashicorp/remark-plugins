@@ -1,11 +1,11 @@
 hello this is a file that uses an include
 
-hi i come from an **included file**
+include/before
 
-yay!
+nested/include2
 
-I come from a nested folder
+include/after
 
-I come from a nested folder
+nested/include2
 
 isn't that neat?

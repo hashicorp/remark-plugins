@@ -1,1 +1,3 @@
-I come from a nested folder
+nested/include3
+
+nested/include2
