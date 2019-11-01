@@ -33,14 +33,6 @@ module.exports = function typographyPlugin() {
       }
     })
 
-    // Add typography classes to paragraphs
-    visit(tree, 'paragraph', node => {
-      const data = node.data || (node.data = {})
-      const props = data.hProperties || (data.hProperties = {})
-      data.id = 'g-type-long-body'
-      props.className = 'g-type-long-body'
-    })
-
     // Add typography classes to list items
     visit(tree, 'list', node => {
       node.children.map(li => {
