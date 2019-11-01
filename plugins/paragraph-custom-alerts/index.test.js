@@ -11,7 +11,7 @@ describe('paragraph-custom-alerts', () => {
         .processSync(`=> this is a success paragraph`)
         .toString()
     ).toMatch(
-      '<div class="alert alert-success" role="alert"><p>this is a success paragraph</p></div>'
+      '<div class="alert alert-success g-type-body" role="alert"><p>this is a success paragraph</p></div>'
     )
   })
 
@@ -31,9 +31,9 @@ this is another "normal" block
         .toString()
     ).toMatch(
       `<p>this is a normal, non-alert paragraph</p>
-<div class="alert alert-warning" role="alert"><p>this is a warning block</p></div>
+<div class="alert alert-warning g-type-body" role="alert"><p>this is a warning block</p></div>
 <p>this is another "normal" block</p>
-<div class="alert alert-success" role="alert"><p>success block here! yeah!</p></div>`
+<div class="alert alert-success g-type-body" role="alert"><p>success block here! yeah!</p></div>`
     )
   })
 })
