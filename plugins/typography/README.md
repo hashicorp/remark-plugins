@@ -20,9 +20,9 @@ Here is some more stuff...
 ```jsx
 <h1 className='g-type-display-2'>Uses</h1>
 
-<p>Here are some uses...</p>
+<p className='g-type-long-body'>Here are some uses...</p>
 
-<h2 className='g-type-section-1'>Another title</h2>
+<h2 className='g-type-display-3'>Another title</h2>
 
-<p>Here is some more stuff...</p>
+<p className='g-type-long-body'>Here is some more stuff...</p>
 ```

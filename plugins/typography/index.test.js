@@ -28,7 +28,7 @@ describe('type-styles', () => {
       /<h6 {\.\.\.{\n\s+"className": "g-type-label"\n\s+}}>{`Heading Six`}<\/h6>/
     )
     expect(output).toMatch(
-      /<li parentName="ul" {\.\.\.{\n\s+"className": "g-type-body"\n\s+}}>{`foo`}<\/li>/
+      /<li parentName="ul" {\.\.\.{\n\s+"className": "g-type-long-body"\n\s+}}>{`foo`}<\/li>/
     )
   })
 })
