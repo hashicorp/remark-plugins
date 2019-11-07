@@ -51,3 +51,9 @@ console.log(mdx.sync('some markdown content', {
 ```
 
 If you are using `next-hashicorp`, all of these plugins will be included by default.
+
+## Publishing
+
+To publish this package to [npm](https://www.npmjs.com/package/@hashicorp/remark-plugins), simply run `npm run publish`. This command will guide you through the versioning/publishing process.
+
+> **Note**: There is no build step when publishing this library. The consumer is expected to transpile the code appropriately.
