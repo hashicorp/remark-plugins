@@ -16,7 +16,9 @@ module.exports = function headingLinkablePlugin() {
       })
       node.children.unshift({
         type: 'html',
-        value: `<a class="anchor" href="#${slug}" aria-hidden="true">»</a>`
+        value: `<a class="anchor" href="#${slug}" aria-label="${generateAriaLabel(
+          text
+        )} permalink">»</a>`
       })
       return [node]
     })
@@ -44,3 +46,16 @@ function generateSlug(links, headline) {
 
   return slug
 }
+
+module.exports.generateSlug = generateSlug
+
+function generateAriaLabel(headline) {
+  return headline
+    .toLowerCase()
+    .replace(/<\/?[^>]*>/g, '') // Strip links
+    .replace(/^\-/g, '') // Remove leading '-'
+    .replace(/\W+/g, ' ') // Collapse whitespace
+    .trim()
+}
+
+module.exports.generateAriaLabel = generateAriaLabel
