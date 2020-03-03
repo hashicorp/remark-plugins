@@ -10,8 +10,6 @@
   "dependencies": {
     "github-slugger": "^1.2.1",
     "remark": "^11.0.1",
-    "remark-autolink-headings": "^5.2.1",
-    "remark-slug": "^5.1.2",
     "to-vfile": "^6.0.0",
     "unist-util-flatmap": "^1.0.0",
     "unist-util-is": "^4.0.0",

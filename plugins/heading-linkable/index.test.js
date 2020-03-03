@@ -3,7 +3,7 @@ const html = require('remark-html')
 const headingLinkable = require('./index.js')
 
 describe('heading-linkable', () => {
-  it('should produce the expected html output', () => {
+  test('produces the expected html output', () => {
     expect(
       remark()
         .use(headingLinkable)
@@ -11,40 +11,91 @@ describe('heading-linkable', () => {
         .processSync('# hello world')
         .toString()
     ).toMatch(
-      '<h1 id="hello-world"><a href="#hello-world" aria-hidden class="anchor">»</a>hello world</h1>'
+      '<h1><a class="anchor" href="#hello-world" aria-hidden="true">»</a><a class="__target" id="#hello-world" aria-hidden="true"></a>hello world</h1>'
     )
   })
-  it('should use the github-slugger library to produce slugs/ids', () => {
-    const slugger = require('github-slugger')()
 
-    const inputHeadings = [
-      'Hello world',
-      'Hello World',
-      'HelloWorld',
-      'Helloworld',
-      'helloworld',
-      ':bomb:Bomber',
-      ':bomb::bomb:Double Bomber',
-      'Foo',
-      'foo',
-      'Bar',
-      'bar',
-      'Bar'
-    ]
-    const randomizeHeadingLevel = () =>
-      '#'.repeat(Math.floor(Math.random() * 5) + 1)
-    const contents = inputHeadings
-      .map(x => `${randomizeHeadingLevel()} ${x}`)
-      .join('\n')
+  test('handles duplicate slugs', () => {
+    expect(
+      remark()
+        .use(headingLinkable)
+        .use(html)
+        .processSync(
+          [
+            '# hello world',
+            '# hello world',
+            '# foo',
+            '# hello world',
+            '# foo'
+          ].join('\n')
+        )
+        .toString()
+    ).toMatch(
+      expectedResult([
+        ['hello world', 'hello-world'],
+        ['hello world', 'hello-world-1'],
+        ['foo', 'foo'],
+        ['hello world', 'hello-world-2'],
+        ['foo', 'foo-1']
+      ])
+    )
+  })
 
-    const processor = remark().use(headingLinkable)
-    const ast = processor.runSync(processor.parse(contents))
+  test('strips html', () => {
+    expect(
+      remark()
+        .use(headingLinkable)
+        .use(html)
+        .processSync(
+          [
+            '# hello world <a href="wow"></a>',
+            '# hello <a href="wow"></a> world'
+          ].join('\n')
+        )
+        .toString()
+    ).toMatch(
+      expectedResult([
+        ['hello world <a href="wow"></a>', 'hello-world'],
+        ['hello <a href="wow"></a> world', 'hello-world-1']
+      ])
+    )
+  })
 
-    slugger.reset()
-    const expectedSlugs = inputHeadings.map(x => slugger.slug(x))
+  test('removes leading hyphens', () => {
+    expect(
+      remark()
+        .use(headingLinkable)
+        .use(html)
+        .processSync(['# - hello world', '# <a></a> hello world'].join('\n'))
+        .toString()
+    ).toMatch(
+      expectedResult([
+        ['- hello world', 'hello-world'],
+        ['<a></a> hello world', 'hello-world-1']
+      ])
+    )
+  })
 
-    expect(ast.children.map(child => child.data.id)).toStrictEqual(
-      expectedSlugs
+  test('removes double hyphens', () => {
+    expect(
+      remark()
+        .use(headingLinkable)
+        .use(html)
+        .processSync(['# hEllO----world', '# hello :&-- world'].join('\n'))
+        .toString()
+    ).toMatch(
+      expectedResult([
+        ['hEllO----world', 'hello-world'],
+        ['hello :&#x26;-- world', 'hello-world-1']
+      ])
     )
   })
 })
+
+function expectedResult(results) {
+  return results
+    .map(([text, slug]) => {
+      return `<h1><a class="anchor" href="#${slug}" aria-hidden="true">»</a><a class="__target" id="#${slug}" aria-hidden="true"></a>${text}</h1>`
+    })
+    .join('\n')
+}
