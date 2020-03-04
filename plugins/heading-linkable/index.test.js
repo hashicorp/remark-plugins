@@ -11,7 +11,7 @@ describe('heading-linkable', () => {
         .processSync('# hello world')
         .toString()
     ).toMatch(
-      '<h1><a class="anchor" href="#hello-world" aria-label="hello world permalink">»</a><a class="__target" id="#hello-world" aria-hidden="true"></a>hello world</h1>'
+      '<h1><a class="anchor" href="#hello-world" aria-label="hello world permalink">»</a><a class="__target" id="hello-world" aria-hidden="true"></a>hello world</h1>'
     )
   })
 
@@ -96,7 +96,7 @@ describe('heading-linkable', () => {
 function expectedResult(results) {
   return results
     .map(([text, slug, ariaLabel]) => {
-      return `<h1><a class="anchor" href="#${slug}" aria-label="${ariaLabel} permalink">»</a><a class="__target" id="#${slug}" aria-hidden="true"></a>${text}</h1>`
+      return `<h1><a class="anchor" href="#${slug}" aria-label="${ariaLabel} permalink">»</a><a class="__target" id="${slug}" aria-hidden="true"></a>${text}</h1>`
     })
     .join('\n')
 }

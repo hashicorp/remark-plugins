@@ -12,7 +12,7 @@ module.exports = function headingLinkablePlugin() {
       const slug = generateSlug(links, text)
       node.children.unshift({
         type: 'html',
-        value: `<a class="__target" id="#${slug}" aria-hidden="true"></a>`
+        value: `<a class="__target" id="${slug}" aria-hidden="true"></a>`
       })
       node.children.unshift({
         type: 'html',
