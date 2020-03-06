@@ -1,18 +1,17 @@
 const is = require('unist-util-is')
 const visit = require('unist-util-visit')
-const slug = require('github-slugger')
-
-const slugger = slug()
+const generateSlug = require('../../generate_slug')
 
 module.exports = function inlineCodeLinkablePlugin() {
   return function transformer(tree) {
+    const links = []
     visit(tree, 'listItem', liNode => {
       visit(liNode, 'paragraph', pNode => {
         // Perform node reconstruction when code appears in first position
         if (is(pNode.children[0], 'inlineCode')) {
           const codeNode = pNode.children[0]
           // Construct an id/slug based on value of <code> node
-          const codeSlug = slugger.slug(`inlinecode-${codeNode.value}`)
+          const codeSlug = generateSlug(`inlinecode-${codeNode.value}`, links)
 
           // Add slug to parent <li> node's id attribute
           const data = liNode.data || (liNode.data = {})
