@@ -97,6 +97,12 @@ describe('heading-linkable', () => {
       ])
     )
   })
+
+  test('generateSlug function works correctly', () => {
+    const generateSlug = headingLinkable.generateSlug
+    expect(generateSlug('foo bar')).toEqual('foo-bar')
+    expect(generateSlug('foo bar', ['foo-bar'])).toEqual('foo-bar-1')
+  })
 })
 
 // Takes an array of expected results, [literal text, slug, aria label]
