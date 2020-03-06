@@ -9,7 +9,7 @@ module.exports = function headingLinkablePlugin() {
         m += i.value
         return m
       }, '')
-      const slug = generateSlug(links, text)
+      const slug = generateSlug(text, links)
       node.children.unshift({
         type: 'html',
         value: `<a class="__target" id="${slug}" aria-hidden="true"></a>`
@@ -25,7 +25,7 @@ module.exports = function headingLinkablePlugin() {
   }
 }
 
-function generateSlug(links, headline) {
+function generateSlug(headline, links = []) {
   let slug = headline
     .toLowerCase()
     .trim()
