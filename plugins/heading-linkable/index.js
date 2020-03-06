@@ -6,7 +6,7 @@ module.exports = function headingLinkablePlugin() {
     return flatMap(tree, node => {
       if (node.type !== 'heading') return [node]
       const text = node.children.reduce((m, i) => {
-        if (i.type === 'text') m += i.value
+        m += i.value
         return m
       }, '')
       const slug = generateSlug(links, text)
@@ -31,8 +31,9 @@ function generateSlug(links, headline) {
     .trim()
     .replace(/<\/?[^>]*>/g, '') // Strip links
     .replace(/\W+/g, '-') // Whitespace to '-'
-    .replace(/^\-/g, '') // Remove leading '-'
     .replace(/-+/g, '-') // Collapse more than one '-'
+    .replace(/^\-/g, '') // Remove leading '-'
+    .replace(/\-$/g, '') // Remove trailing '-'
 
   // count if there are any duplicates on the page
   const dupeCount = links.reduce((m, i) => {

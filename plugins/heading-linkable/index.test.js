@@ -81,12 +81,19 @@ describe('heading-linkable', () => {
       remark()
         .use(headingLinkable)
         .use(html)
-        .processSync(['# hEllO----world', '# hello :&-- world'].join('\n'))
+        .processSync(
+          [
+            '# hEllO----world',
+            '# hello :&-- world',
+            '# hello world (foo)()'
+          ].join('\n')
+        )
         .toString()
     ).toMatch(
       expectedResult([
         ['hEllO----world', 'hello-world', 'hello world'],
-        ['hello :&#x26;-- world', 'hello-world-1', 'hello world']
+        ['hello :&#x26;-- world', 'hello-world-1', 'hello world'],
+        ['hello world (foo)()', 'hello-world-foo', 'hello world foo']
       ])
     )
   })
