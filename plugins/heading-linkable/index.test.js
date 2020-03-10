@@ -97,6 +97,18 @@ describe('heading-linkable', () => {
       ])
     )
   })
+
+  test('generates an extra slug if the argument is provided', () => {
+    expect(
+      remark()
+        .use(headingLinkable, { compatibilitySlug: slug => 'foo' })
+        .use(html)
+        .processSync('# hello world')
+        .toString()
+    ).toMatch(
+      '<h1><a class="anchor" href="#hello-world" aria-label="hello world permalink">»</a><a class="__target_compat" id="foo" aria-hidden="true"></a><a class="__target" id="hello-world" aria-hidden="true"></a>hello world</h1>'
+    )
+  })
 })
 
 // Takes an array of expected results, [literal text, slug, aria label]

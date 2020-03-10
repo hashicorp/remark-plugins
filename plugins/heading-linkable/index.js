@@ -2,7 +2,7 @@ const generateSlug = require('../../generate_slug')
 const map = require('unist-util-map')
 const is = require('unist-util-is')
 
-module.exports = function headingLinkablePlugin() {
+module.exports = function headingLinkablePlugin({ compatibilitySlug } = {}) {
   return function transformer(tree) {
     const links = []
     return map(tree, node => {
@@ -11,17 +11,28 @@ module.exports = function headingLinkablePlugin() {
         m += i.value
         return m
       }, '')
+
       const slug = generateSlug(text, links)
       node.children.unshift({
         type: 'html',
         value: `<a class="__target" id="${slug}" aria-hidden="true"></a>`
       })
+
+      if (compatibilitySlug) {
+        const slug2 = compatibilitySlug(text, links)
+        node.children.unshift({
+          type: 'html',
+          value: `<a class="__target_compat" id="${slug2}" aria-hidden="true"></a>`
+        })
+      }
+
       node.children.unshift({
         type: 'html',
         value: `<a class="anchor" href="#${slug}" aria-label="${generateAriaLabel(
           text
         )} permalink">»</a>`
       })
+
       return node
     })
   }
