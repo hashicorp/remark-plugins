@@ -11,7 +11,13 @@ describe('heading-linkable', () => {
         .processSync('# hello world')
         .toString()
     ).toMatch(
-      '<h1><a class="anchor" href="#hello-world" aria-label="hello world permalink">»</a><a class="__target" id="hello-world" aria-hidden="true"></a>hello world</h1>'
+      [
+        '<h1>',
+        '<a class="anchor" href="#hello-world" aria-label="hello world permalink">»</a>',
+        '<a class="__target" id="hello-world" aria-hidden="true"></a>',
+        'hello world',
+        '</h1>'
+      ].join('')
     )
   })
 
@@ -106,7 +112,32 @@ describe('heading-linkable', () => {
         .processSync('# hello world')
         .toString()
     ).toMatch(
-      '<h1><a class="anchor" href="#hello-world" aria-label="hello world permalink">»</a><a class="__target_compat" id="foo" aria-hidden="true"></a><a class="__target" id="hello-world" aria-hidden="true"></a>hello world</h1>'
+      [
+        '<h1>',
+        '<a class="anchor" href="#hello-world" aria-label="hello world permalink">»</a>',
+        '<a class="__target_compat" id="foo" aria-hidden="true"></a>',
+        '<a class="__target" id="hello-world" aria-hidden="true"></a>',
+        'hello world',
+        '</h1>'
+      ].join('')
+    )
+  })
+
+  test('does not render duplicate compatibility slugs', () => {
+    expect(
+      remark()
+        .use(headingLinkable, { compatibilitySlug: slug => 'hello-world' })
+        .use(html)
+        .processSync('# hello world')
+        .toString()
+    ).toMatch(
+      [
+        '<h1>',
+        '<a class="anchor" href="#hello-world" aria-label="hello world permalink">»</a>',
+        '<a class="__target" id="hello-world" aria-hidden="true"></a>',
+        'hello world',
+        '</h1>'
+      ].join('')
     )
   })
 })

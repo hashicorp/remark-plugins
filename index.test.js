@@ -6,5 +6,7 @@ it('api works as intended', () => {
   expect(remarkPlugins.paragraphCustomAlerts).toBeTruthy()
   expect(remarkPlugins.typography).toBeTruthy()
   expect(remarkPlugins.includeMarkdown).toBeTruthy()
-  expect(remarkPlugins.allPlugins.length).toBe(5)
+  expect(remarkPlugins.allPlugins().length).toBe(5)
+  // passes options to headingLinkable correctly
+  expect(remarkPlugins.allPlugins({ headingLinkable: 'foo' })[1][1]).toBe('foo')
 })

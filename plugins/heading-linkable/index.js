@@ -19,11 +19,13 @@ module.exports = function headingLinkablePlugin({ compatibilitySlug } = {}) {
       })
 
       if (compatibilitySlug) {
-        const slug2 = compatibilitySlug(text, links)
-        node.children.unshift({
-          type: 'html',
-          value: `<a class="__target_compat" id="${slug2}" aria-hidden="true"></a>`
-        })
+        const slug2 = compatibilitySlug(text)
+        if (slug !== slug2) {
+          node.children.unshift({
+            type: 'html',
+            value: `<a class="__target_compat" id="${slug2}" aria-hidden="true"></a>`
+          })
+        }
       }
 
       node.children.unshift({

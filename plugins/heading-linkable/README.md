@@ -41,3 +41,9 @@ Content here...
 ```
 
 Since the `__target` element actually carries the id rather than the headline, it can be positioned independently to pad the headline off the top of the page if necessary, which is the case any time we use a "sticky" navigation.
+
+## Options
+
+- `compatibilitySlug` _(optional)_ - if present, will generate an additional target element using a custom slug creation algorithm. Accepts a function with the following signature `fn(text: string)`. The `text` argument is the headline text, if the `compatibilitySlug` function generates an idential slug as the default, it will not be added at all.
+
+  > **NOTE:** Be conscious of duplicate tracking with your compatibility function. If it needs to keep track of existing slugs on the page to avoid duplicates, it must implement that functionality on its own. Default slugs are not exposed to the `compatibilitySlug` function because this offers a footgun that can easily break compatibility. The `compatibilitySlug` function should operate entirely in its own sphere -- if it happens to generate a duplicate slug, the plugin itself will remove it as compatibility isn't necessary in that instance.

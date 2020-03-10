@@ -46,9 +46,11 @@ const mdx = require('@mdx-js/mdx')
 const {allPlugins} = require('@hashicorp/remark-plugins')
 
 console.log(mdx.sync('some markdown content', {
-  remarkPlugins: allPlugins
+  remarkPlugins: allPlugins(/* options */)
 })
 ```
+
+Plugin options can be passed to `allPlugins` as an object, with the keys being plugin names. For example, to pass options to `headingLinkable`, you could call `allPlugins({ headingLinkable: { foo: 'bar' } })`.
 
 If you are using `next-hashicorp`, all of these plugins will be included by default.
 
