@@ -14,9 +14,9 @@ module.exports = {
 }
 
 // for easy use of everything at the same time
-module.exports.allPlugins = [
+module.exports.allPlugins = ({ headingLinkable } = {}) => [
   includeMarkdown,
-  headingLinkable,
+  headingLinkable(headingLinkable),
   inlineCodeLinkable,
   paragraphCustomAlerts,
   typography
