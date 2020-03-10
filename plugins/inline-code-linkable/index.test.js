@@ -1,5 +1,9 @@
 const remark = require('remark')
 const codeBlockLinkable = require('./index.js')
+const unified = require('unified')
+const rehype = require('remark-rehype')
+const markdownParse = require('remark-parse')
+const html = require('rehype-stringify')
 
 describe('inlineCode-linkable', () => {
   describe('basic fixture - two list items; one linkable', () => {
@@ -67,4 +71,18 @@ describe('inlineCode-linkable', () => {
       expect(fourthListItem.data).not.toBeDefined()
     })
   })
+})
+
+test('real world output, deep nested lists', () => {
+  const text =
+    "#### Field Reference\n\n  - `TaskStates` - A map of tasks to their current state and the latest events\n    that have effected the state. `TaskState` objects contain the following\n    fields:\n      - `State`: The task's current state. It can have one of the following\n      values:\n        - `TaskStatePending` - The task is waiting to be run, either for the first\n        time or due to a restart."
+
+  unified()
+    .use(markdownParse)
+    .use(codeBlockLinkable)
+    .use(rehype)
+    .use(html)
+    .process(text, (_, file) => {
+      expect(String(file)).toMatchSnapshot()
+    })
 })

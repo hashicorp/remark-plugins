@@ -1,11 +1,12 @@
 const generateSlug = require('../../generate_slug')
-const flatMap = require('unist-util-flatmap')
+const map = require('unist-util-map')
+const is = require('unist-util-is')
 
 module.exports = function headingLinkablePlugin() {
   return function transformer(tree) {
     const links = []
-    return flatMap(tree, node => {
-      if (node.type !== 'heading') return [node]
+    return map(tree, node => {
+      if (!is(node, 'heading')) return node
       const text = node.children.reduce((m, i) => {
         m += i.value
         return m
@@ -21,7 +22,7 @@ module.exports = function headingLinkablePlugin() {
           text
         )} permalink">»</a>`
       })
-      return [node]
+      return node
     })
   }
 }
@@ -29,7 +30,7 @@ module.exports = function headingLinkablePlugin() {
 function generateAriaLabel(headline) {
   return headline
     .toLowerCase()
-    .replace(/<\/?[^>]*>/g, '') // Strip links
+    .replace(/<\/?[^>]*>/g, '') // Strip html
     .replace(/^\-/g, '') // Remove leading '-'
     .replace(/\-$/g, '') // Remove trailing '-'
     .replace(/\W+/g, ' ') // Collapse whitespace
