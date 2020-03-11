@@ -30,7 +30,7 @@ module.exports = function headingLinkablePlugin({ compatibilitySlug } = {}) {
 
       node.children.unshift({
         type: 'html',
-        value: `<a class="anchor" href="#${slug}" aria-label="${generateAriaLabel(
+        value: `<a class="anchor" href="#${slug}" aria-label="${generateSlug.generateAriaLabel(
           text
         )} permalink">»</a>`
       })
@@ -39,15 +39,3 @@ module.exports = function headingLinkablePlugin({ compatibilitySlug } = {}) {
     })
   }
 }
-
-function generateAriaLabel(headline) {
-  return headline
-    .toLowerCase()
-    .replace(/<\/?[^>]*>/g, '') // Strip html
-    .replace(/^\-/g, '') // Remove leading '-'
-    .replace(/\-$/g, '') // Remove trailing '-'
-    .replace(/\W+/g, ' ') // Collapse whitespace
-    .trim()
-}
-
-module.exports.generateAriaLabel = generateAriaLabel

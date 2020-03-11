@@ -24,3 +24,7 @@ test('strips extra characters and html', () => {
 test('downcases', () => {
   expect(generateSlug('fOo BAr')).toEqual('foo-bar')
 })
+
+test('generates aria label', () => {
+  // TODO
+})

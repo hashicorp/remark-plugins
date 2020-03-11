@@ -1,25 +1,20 @@
-const headingLinkable = require('./plugins/heading-linkable')
-const inlineCodeLinkable = require('./plugins/inline-code-linkable')
+const anchorLinks = require('./plugins/anchor-links')
 const paragraphCustomAlerts = require('./plugins/paragraph-custom-alerts')
 const typography = require('./plugins/typography')
 const includeMarkdown = require('./plugins/include-markdown')
 
 // allow individual plugins to be pulled out and used
 module.exports = {
-  headingLinkable,
-  inlineCodeLinkable,
+  anchorLinks,
   paragraphCustomAlerts,
   typography,
   includeMarkdown
 }
 
 // for easy use of everything at the same time
-module.exports.allPlugins = ({
-  headingLinkable: headingLinkableOptions
-} = {}) => [
+module.exports.allPlugins = ({ anchorLinks: anchorLinksOptions } = {}) => [
   includeMarkdown,
-  [headingLinkable, headingLinkableOptions],
-  inlineCodeLinkable,
+  [anchorLinks, anchorLinksOptions],
   paragraphCustomAlerts,
   typography
 ]

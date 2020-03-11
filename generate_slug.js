@@ -20,3 +20,13 @@ module.exports = function generateSlug(headline, links = []) {
 
   return slug
 }
+
+module.exports.generateAriaLabel = function generateAriaLabel(headline) {
+  return headline
+    .toLowerCase()
+    .replace(/<\/?[^>]*>/g, '') // Strip html
+    .replace(/^\-/g, '') // Remove leading '-'
+    .replace(/\-$/g, '') // Remove trailing '-'
+    .replace(/\W+/g, ' ') // Collapse whitespace
+    .trim()
+}
