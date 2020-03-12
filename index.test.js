@@ -6,6 +6,6 @@ it('api works as intended', () => {
   expect(remarkPlugins.typography).toBeTruthy()
   expect(remarkPlugins.includeMarkdown).toBeTruthy()
   expect(remarkPlugins.allPlugins().length).toBe(4)
-  // passes options to headingLinkable correctly
+  // passes options to anchorLinks correctly
   expect(remarkPlugins.allPlugins({ anchorLinks: 'foo' })[1][1]).toBe('foo')
 })

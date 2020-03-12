@@ -73,7 +73,7 @@ function processHeading(node, compatibilitySlug, links) {
     }
   }
 
-  // finally, we generate an "anchor" element that can be used to get a quick
+  // finally, we generate an "permalink" element that can be used to get a quick
   // anchor link for any given headline
   node.children.unshift({
     type: 'html',
@@ -96,15 +96,14 @@ function processListWithInlineCode(liNode, pNode, codeNode, prefix, links) {
   const aliases = processAlias(nextNode, 'lic')
   if (aliases) liNode.children.unshift(...aliases)
 
-  // add slug to parent <li> node's id attribute
-  // TODO - this needs to be an independent element for sticky navs
+  // add the target element with the right slug
   liNode.children.unshift({
     type: 'html',
     value: `<a id="${slug}" class="__target-lic" aria-hidden></a>`
   })
 
-  // wrap link element around child <code> node, so clicking will set the url
-  // to the anchor link.
+  // wrap permalink element around child <code> node, so clicking will set
+  // the url to the anchor link.
   pNode.children[0] = {
     type: 'link',
     url: `#${slug}`,
@@ -121,15 +120,20 @@ function processListWithInlineCode(liNode, pNode, codeNode, prefix, links) {
 }
 
 function processAlias(node, id) {
+  // we look for ((#foo)) or ((#foo, #bar))
   const aliasRegex = /\s*\(\((#.*?)\)\)/
 
   if (node && node.value && node.value.match(aliasRegex)) {
+    // if we have a match, format into an array of slugs without the '#'
     const aliases = node.value
       .match(aliasRegex)[1]
       .split(',')
       .map(s => s.trim().replace(/^#/, ''))
+
+    // then remove the entire match from the element's actual text
     node.value = node.value.replace(aliasRegex, '')
 
+    // finally we return an array of target elements using each alias given
     return aliases.map(alias => {
       return {
         type: 'html',

@@ -34,4 +34,6 @@ test('generates aria label', () => {
 
 test('removes anchor link aliases', () => {
   expect(generateSlug('foo bar ((#wow))')).toEqual('foo-bar')
+  expect(generateSlug('foo bar ((#wow, #amaze))')).toEqual('foo-bar')
+  expect(generateSlug('foo bar ((wow))')).toEqual('foo-bar-wow')
 })

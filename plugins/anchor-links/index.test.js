@@ -268,7 +268,6 @@ function execute(input, options = {}) {
     .trim()
 }
 
-// Takes an array of expected results, [literal text, slug, aria label]
 function expectedHeadingResult({ slug, compatSlugs, aria, text, level }) {
   const res = [`<h${level || '1'}>`]
   res.push(
@@ -290,7 +289,6 @@ function expectedHeadingResult({ slug, compatSlugs, aria, text, level }) {
   return res.join('')
 }
 
-// TODO: use this evenly across all tests
 function expectedInlineCodeResult({
   slug,
   compatSlugs,
