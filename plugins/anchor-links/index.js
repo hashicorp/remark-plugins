@@ -43,15 +43,12 @@ module.exports = function anchorLinksPlugin({
   }
 }
 
-// make sure pure slug generation removed links
-
 function processHeading(node, compatibilitySlug, links) {
   // a heading can contain multiple nodes including text, html, etc
-  // we add all their values here to get the literal headline contents
-  const text = node.children.reduce((m, i) => {
-    if (i.value) m += i.value
-    return m
-  }, '')
+  // we stringify the node here to get its literal text contents
+  const text = remark()
+    .use(stringify)
+    .stringify(node)
 
   // generate the slug and add a target element to the headline
   const slug = generateSlug(text, links)

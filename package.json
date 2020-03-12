@@ -36,7 +36,7 @@
   },
   "repository": "https://github.com/hashicorp/remark-plugins",
   "scripts": {
-    "test": "jest --verbose",
-    "publish": "npx np"
+    "publish": "npx np",
+    "test": "jest --verbose"
   }
 }
