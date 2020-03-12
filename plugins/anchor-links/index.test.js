@@ -26,13 +26,22 @@ describe('anchor-links', () => {
           '# foo'
         ])
       ).toMatch(
-        expectedHeadingResult([
-          ['hello world', 'hello-world', 'hello world'],
-          ['hello world', 'hello-world-1', 'hello world'],
-          ['foo', 'foo', 'foo'],
-          ['hello world', 'hello-world-2', 'hello world'],
-          ['foo', 'foo-1', 'foo']
-        ])
+        [
+          expectedHeadingResult({
+            slug: 'hello-world',
+            text: 'hello world'
+          }),
+          expectedHeadingResult({
+            slug: 'hello-world-1',
+            text: 'hello world'
+          }),
+          expectedHeadingResult({ slug: 'foo' }),
+          expectedHeadingResult({
+            slug: 'hello-world-2',
+            text: 'hello world'
+          }),
+          expectedHeadingResult({ text: 'foo', slug: 'foo-1', aria: 'foo' })
+        ].join('\n')
       )
     })
 
@@ -43,19 +52,35 @@ describe('anchor-links', () => {
           '# hello <a href="wow"></a> world'
         ])
       ).toMatch(
-        expectedHeadingResult([
-          ['hello world <a href="wow"></a>', 'hello-world', 'hello world'],
-          ['hello <a href="wow"></a> world', 'hello-world-1', 'hello world']
-        ])
+        [
+          expectedHeadingResult({
+            slug: 'hello-world',
+            text: 'hello world <a href="wow"></a>',
+            aria: 'hello world'
+          }),
+          expectedHeadingResult({
+            slug: 'hello-world-1',
+            text: 'hello <a href="wow"></a> world',
+            aria: 'hello world'
+          })
+        ].join('\n')
       )
     })
 
     test('removes leading hyphens', () => {
       expect(execute(['# - hello world', '# <a></a> hello world'])).toMatch(
-        expectedHeadingResult([
-          ['- hello world', 'hello-world', 'hello world'],
-          ['<a></a> hello world', 'hello-world-1', 'hello world']
-        ])
+        [
+          expectedHeadingResult({
+            slug: 'hello-world',
+            text: '- hello world',
+            aria: 'hello world'
+          }),
+          expectedHeadingResult({
+            slug: 'hello-world-1',
+            text: '<a></a> hello world',
+            aria: 'hello world'
+          })
+        ].join('\n')
       )
     })
 
@@ -67,11 +92,23 @@ describe('anchor-links', () => {
           '# hello world (foo)()'
         ])
       ).toMatch(
-        expectedHeadingResult([
-          ['hEllO----world', 'hello-world', 'hello world'],
-          ['hello :&#x26;-- world', 'hello-world-1', 'hello world'],
-          ['hello world (foo)()', 'hello-world-foo', 'hello world foo']
-        ])
+        [
+          expectedHeadingResult({
+            slug: 'hello-world',
+            text: 'hEllO----world',
+            aria: 'hello world'
+          }),
+          expectedHeadingResult({
+            slug: 'hello-world-1',
+            text: 'hello :&#x26;-- world',
+            aria: 'hello world'
+          }),
+          expectedHeadingResult({
+            slug: 'hello-world-foo',
+            text: 'hello world (foo)()',
+            aria: 'hello world foo'
+          })
+        ].join('\n')
       )
     })
 
@@ -79,14 +116,11 @@ describe('anchor-links', () => {
       expect(
         execute('# hello world', { compatibilitySlug: _ => 'foo' })
       ).toMatch(
-        [
-          '<h1>',
-          '<a class="__permalink-h" href="#hello-world" aria-label="hello world permalink">»</a>',
-          '<a class="__target-h __compat" id="foo" aria-hidden></a>',
-          '<a class="__target-h" id="hello-world" aria-hidden></a>',
-          'hello world',
-          '</h1>'
-        ].join('')
+        expectedHeadingResult({
+          slug: 'hello-world',
+          text: 'hello world',
+          compatSlugs: ['foo']
+        })
       )
     })
 
@@ -94,26 +128,20 @@ describe('anchor-links', () => {
       expect(
         execute('# hello world', { compatibilitySlug: _ => 'hello-world' })
       ).toMatch(
-        [
-          '<h1>',
-          '<a class="__permalink-h" href="#hello-world" aria-label="hello world permalink">»</a>',
-          '<a class="__target-h" id="hello-world" aria-hidden></a>',
-          'hello world',
-          '</h1>'
-        ].join('')
+        expectedHeadingResult({
+          slug: 'hello-world',
+          text: 'hello world'
+        })
       )
     })
 
     test('anchor aliases', () => {
       expect(execute('# hello world ((#foo))')).toMatch(
-        [
-          '<h1>',
-          '<a class="__permalink-h" href="#hello-world" aria-label="hello world permalink">»</a>',
-          '<a class="__target-h" id="hello-world" aria-hidden></a>',
-          '<a id="foo" class="__target-h __compat" aria-hidden></a>',
-          'hello world',
-          '</h1>'
-        ].join('')
+        expectedHeadingResult({
+          slug: 'hello-world',
+          text: 'hello world',
+          compatSlugs: ['foo']
+        })
       )
     })
   })
@@ -137,8 +165,14 @@ describe('anchor-links', () => {
           '<p>some text</p>',
           '<ul>',
           '<li>raw text</li>',
-          '<li><a id="code-with-spaces" class="__target-lic" aria-hidden></a><a href="#code-with-spaces" aria-label="code with spaces permalink" class="__permalink-lic"><code>code with spaces</code></a></li>',
-          '<li><a id="code_with_text_after" class="__target-lic" aria-hidden></a><a href="#code_with_text_after" aria-label="code_with_text_after permalink" class="__permalink-lic"><code>code_with_text_after</code></a> - explanation of code</li>',
+          expectedInlineCodeResult({
+            slug: 'code-with-spaces',
+            code: 'code with spaces'
+          }),
+          expectedInlineCodeResult({
+            slug: 'code_with_text_after',
+            afterCode: ' - explanation of code'
+          }),
           '<li>text <code>followed_by_code</code> then more text</li>',
           '<li><a>html</a> <code>followed_by_code</code> then more text</li>',
           '</ul>',
@@ -151,8 +185,8 @@ describe('anchor-links', () => {
       expect(execute(['- `foo`', '- `foo`'])).toMatch(
         [
           '<ul>',
-          '<li><a id="foo" class="__target-lic" aria-hidden></a><a href="#foo" aria-label="foo permalink" class="__permalink-lic"><code>foo</code></a></li>',
-          '<li><a id="foo-1" class="__target-lic" aria-hidden></a><a href="#foo-1" aria-label="foo permalink" class="__permalink-lic"><code>foo</code></a></li>',
+          expectedInlineCodeResult({ slug: 'foo' }),
+          expectedInlineCodeResult({ slug: 'foo-1', code: 'foo' }),
           '</ul>'
         ].join('\n')
       )
@@ -164,7 +198,10 @@ describe('anchor-links', () => {
       ).toMatch(
         [
           '<ul>',
-          '<li><a id="inlinecode-foo" class="__target-lic" aria-hidden></a><a href="#inlinecode-foo" aria-label="foo permalink" class="__permalink-lic"><code>foo</code></a></li>',
+          expectedInlineCodeResult({
+            slug: 'inlinecode-foo',
+            code: 'foo'
+          }),
           '</ul>'
         ].join('\n')
       )
@@ -173,9 +210,9 @@ describe('anchor-links', () => {
     test('duplicate slug with headline', () => {
       expect(execute(['# foo', '', '- `foo`'])).toMatch(
         [
-          '<h1><a class="__permalink-h" href="#foo" aria-label="foo permalink">»</a><a class="__target-h" id="foo" aria-hidden></a>foo</h1>',
+          expectedHeadingResult({ slug: 'foo' }),
           '<ul>',
-          '<li><a id="foo-1" class="__target-lic" aria-hidden></a><a href="#foo-1" aria-label="foo permalink" class="__permalink-lic"><code>foo</code></a></li>',
+          expectedInlineCodeResult({ slug: 'foo-1', code: 'foo' }),
           '</ul>'
         ].join('\n')
       )
@@ -188,9 +225,12 @@ describe('anchor-links', () => {
         })
       ).toMatch(
         [
-          '<h1><a class="__permalink-h" href="#foo" aria-label="foo permalink">»</a><a class="__target-h" id="foo" aria-hidden></a>foo</h1>',
+          expectedHeadingResult({ slug: 'foo' }),
           '<ul>',
-          '<li><a id="inlinecode-foo" class="__target-lic" aria-hidden></a><a href="#inlinecode-foo" aria-label="foo permalink" class="__permalink-lic"><code>foo</code></a></li>',
+          expectedInlineCodeResult({
+            slug: 'inlinecode-foo',
+            code: 'foo'
+          }),
           '</ul>'
         ].join('\n')
       )
@@ -209,7 +249,6 @@ describe('anchor-links', () => {
           }),
           expectedInlineCodeResult({
             slug: 'foo-1',
-            aria: 'foo',
             code: 'foo',
             compatSlugs: ['baz', 'quux']
           }),
@@ -230,12 +269,21 @@ function execute(input, options = {}) {
 }
 
 // Takes an array of expected results, [literal text, slug, aria label]
-function expectedHeadingResult(results) {
-  return results
-    .map(([text, slug, ariaLabel]) => {
-      return `<h1><a class="__permalink-h" href="#${slug}" aria-label="${ariaLabel} permalink">»</a><a class="__target-h" id="${slug}" aria-hidden></a>${text}</h1>`
-    })
-    .join('\n')
+function expectedHeadingResult({ slug, compatSlugs, aria, text, level }) {
+  const res = [`<h${level || '1'}>`]
+  res.push(
+    `<a class="__permalink-h" href="#${slug}" aria-label="${aria ||
+      text ||
+      slug} permalink">»</a>`
+  )
+  res.push(
+    `<a class="__target-h" id="${slug}${
+      compatSlugs ? ' ' + compatSlugs.join(' ') : ''
+    }" aria-hidden></a>`
+  )
+  res.push(text || slug)
+  res.push(`</h${level || '1'}>`)
+  return res.join('')
 }
 
 // TODO: use this evenly across all tests
@@ -248,16 +296,14 @@ function expectedInlineCodeResult({
 }) {
   const res = ['<li>']
 
-  res.push(`<a id="${slug}" class="__target-lic" aria-hidden></a>`)
-  if (compatSlugs && compatSlugs.length) {
-    compatSlugs.map(compatSlug => {
-      res.push(
-        `<a id="${compatSlug}" class="__target-lic __compat" aria-hidden></a>`
-      )
-    })
-  }
+  res.push(
+    `<a id="${slug}${
+      compatSlugs ? ' ' + compatSlugs.join(' ') : ''
+    }" class="__target-lic" aria-hidden></a>`
+  )
   res.push(
     `<a href="#${slug}" aria-label="${aria ||
+      code ||
       slug} permalink" class="__permalink-lic">`
   )
   res.push(`<code>${code || slug}</code>`)
