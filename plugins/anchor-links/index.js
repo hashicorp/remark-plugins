@@ -53,26 +53,28 @@ function processHeading(node, compatibilitySlug, links) {
     return m
   }, '')
 
-  // handle anchor link aliases
-  const aliases = processAlias(node.children[0])
-
-  // then we generate the slug and add a target element to the headline
+  // generate the slug and add a target element to the headline
   const slug = generateSlug(text, links)
+  node.children.unshift({
+    type: 'html',
+    value: `<a class="__target-h" id="${slug}" aria-hidden></a>`
+  })
+
+  // handle anchor link aliases
+  const aliases = processAlias(node.children[1], 'h')
+  if (aliases) node.children.unshift(...aliases)
 
   // if the compatibilitySlug option is present, we generate it and add to the
   // headline if it doesn't already match the existing slug
-  const compatSlugs = []
   if (compatibilitySlug) {
     const slug2 = compatibilitySlug(text)
-    if (slug !== slug2) compatSlugs.push(slug2)
+    if (slug !== slug2) {
+      node.children.unshift({
+        type: 'html',
+        value: `<a class="__target-h __compat" id="${slug2}" aria-hidden></a>`
+      })
+    }
   }
-
-  node.children.unshift({
-    type: 'html',
-    value: `<a class="__target-h" id="${slug}${
-      aliases ? ' ' + aliases.join(' ') : ''
-    }${compatSlugs.length ? ' ' + compatSlugs.join(' ') : ''}" aria-hidden></a>`
-  })
 
   // finally, we generate an "anchor" element that can be used to get a quick
   // anchor link for any given headline
@@ -94,15 +96,14 @@ function processListWithInlineCode(liNode, pNode, codeNode, prefix, links) {
 
   // handle anchor link aliases
   const nextNode = pNode.children[1]
-  const aliases = processAlias(nextNode)
+  const aliases = processAlias(nextNode, 'lic')
+  if (aliases) liNode.children.unshift(...aliases)
 
   // add slug to parent <li> node's id attribute
   // TODO - this needs to be an independent element for sticky navs
   liNode.children.unshift({
     type: 'html',
-    value: `<a id="${slug}${
-      aliases ? ' ' + aliases.join(' ') : ''
-    }" class="__target-lic" aria-hidden></a>`
+    value: `<a id="${slug}" class="__target-lic" aria-hidden></a>`
   })
 
   // wrap link element around child <code> node, so clicking will set the url
@@ -122,7 +123,7 @@ function processListWithInlineCode(liNode, pNode, codeNode, prefix, links) {
   return liNode
 }
 
-function processAlias(node) {
+function processAlias(node, id) {
   const aliasRegex = /\s*\(\((#.*?)\)\)/
 
   if (node && node.value && node.value.match(aliasRegex)) {
@@ -131,6 +132,12 @@ function processAlias(node) {
       .split(',')
       .map(s => s.trim().replace(/^#/, ''))
     node.value = node.value.replace(aliasRegex, '')
-    return aliases
+
+    return aliases.map(alias => {
+      return {
+        type: 'html',
+        value: `<a class="__target-${id} __compat" id="${alias}" aria-hidden></a>`
+      }
+    })
   }
 }

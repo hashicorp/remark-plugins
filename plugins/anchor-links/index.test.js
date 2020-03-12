@@ -276,11 +276,15 @@ function expectedHeadingResult({ slug, compatSlugs, aria, text, level }) {
       text ||
       slug} permalink">»</a>`
   )
-  res.push(
-    `<a class="__target-h" id="${slug}${
-      compatSlugs ? ' ' + compatSlugs.join(' ') : ''
-    }" aria-hidden></a>`
-  )
+
+  if (compatSlugs) {
+    compatSlugs.map(compatSlug =>
+      res.push(
+        `<a class="__target-h __compat" id="${compatSlug}" aria-hidden></a>`
+      )
+    )
+  }
+  res.push(`<a class="__target-h" id="${slug}" aria-hidden></a>`)
   res.push(text || slug)
   res.push(`</h${level || '1'}>`)
   return res.join('')
@@ -296,11 +300,14 @@ function expectedInlineCodeResult({
 }) {
   const res = ['<li>']
 
-  res.push(
-    `<a id="${slug}${
-      compatSlugs ? ' ' + compatSlugs.join(' ') : ''
-    }" class="__target-lic" aria-hidden></a>`
-  )
+  res.push(`<a id="${slug}" class="__target-lic" aria-hidden></a>`)
+  if (compatSlugs) {
+    compatSlugs.map(compatSlug =>
+      res.push(
+        `<a class="__target-lic __compat" id="${compatSlug}" aria-hidden></a>`
+      )
+    )
+  }
   res.push(
     `<a href="#${slug}" aria-label="${aria ||
       code ||

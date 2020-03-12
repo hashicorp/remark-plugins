@@ -61,7 +61,7 @@ This markup would ensure that `#alias` and `#alias-2` also link to `#headline`, 
 
 ## Options
 
-- `compatibilitySlug` _(function, optional)_ - if present, will generate an slug using a custom slug creation algorithm and add it to the `__target` element as an id. Accepts a function with the following signature `fn(text: string)`. The `text` argument is the headline text, if the `compatibilitySlug` function generates an idential slug as the default, it will not be added at all.
+- `compatibilitySlug` _(function, optional)_ - if present, will generate an slug using a custom slug creation algorithm and add it to the element as an additional `__target` element. Accepts a function with the following signature `fn(text: string)`. The `text` argument is the headline text, if the `compatibilitySlug` function generates an idential slug as the default, it will not be added at all.
 
   > **NOTE:** Be conscious of duplicate tracking with your compatibility function. If it needs to keep track of existing slugs on the page to avoid duplicates, it must implement that functionality on its own. Default slugs are not exposed to the `compatibilitySlug` function because this offers a footgun that can easily break compatibility. The `compatibilitySlug` function should operate entirely in its own sphere -- if it happens to generate a duplicate slug, the plugin itself will remove it as compatibility isn't necessary in that instance.
 
