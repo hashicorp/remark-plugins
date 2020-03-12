@@ -1,6 +1,8 @@
 const generateSlug = require('../../generate_slug')
 const map = require('unist-util-map')
 const is = require('unist-util-is')
+const remark = require('remark')
+const stringify = require('remark-stringify')
 
 // This plugin adds anchor links to headlines and lists that begin with inline
 // code blocks.
@@ -41,19 +43,25 @@ module.exports = function anchorLinksPlugin({
   }
 }
 
+// make sure pure slug generation removed links
+
 function processHeading(node, compatibilitySlug, links) {
   // a heading can contain multiple nodes including text, html, etc
   // we add all their values here to get the literal headline contents
   const text = node.children.reduce((m, i) => {
-    m += i.value
+    if (i.value) m += i.value
     return m
   }, '')
+
+  // handle anchor link aliases
+  const aliases = processAlias(node.children[0], 'h')
+  if (aliases) node.children.unshift(...aliases)
 
   // then we generate the slug and add a target element to the headline
   const slug = generateSlug(text, links)
   node.children.unshift({
     type: 'html',
-    value: `<a class="__target-h" id="${slug}" aria-hidden="true"></a>`
+    value: `<a class="__target-h" id="${slug}" aria-hidden></a>`
   })
 
   // if the compatibilitySlug option is present, we generate it and add to the
@@ -63,7 +71,7 @@ function processHeading(node, compatibilitySlug, links) {
     if (slug !== slug2) {
       node.children.unshift({
         type: 'html',
-        value: `<a class="__target-h __compat" id="${slug2}" aria-hidden="true"></a>`
+        value: `<a class="__target-h __compat" id="${slug2}" aria-hidden></a>`
       })
     }
   }
@@ -85,6 +93,11 @@ function processListWithInlineCode(liNode, pNode, codeNode, prefix, links) {
   // if the prefix option is present, add it before the slug name
   const text = codeNode.value
   const slug = generateSlug(`${prefix ? `${prefix}-` : ''}${text}`, links)
+
+  // handle anchor link aliases
+  const nextNode = pNode.children[1]
+  const aliases = processAlias(nextNode, 'lic')
+  if (aliases) liNode.children.unshift(...aliases)
 
   // add slug to parent <li> node's id attribute
   // TODO - this needs to be an independent element for sticky navs
@@ -108,4 +121,23 @@ function processListWithInlineCode(liNode, pNode, codeNode, prefix, links) {
   }
 
   return liNode
+}
+
+function processAlias(node, id) {
+  const aliasRegex = /\s*\(\((#.*?)\)\)/
+
+  if (node && node.value && node.value.match(aliasRegex)) {
+    const aliases = node.value
+      .match(aliasRegex)[1]
+      .split(',')
+      .map(s => s.trim().replace(/^#/, ''))
+    node.value = node.value.replace(aliasRegex, '')
+
+    return aliases.map(alias => {
+      return {
+        type: 'html',
+        value: `<a id="${alias}" class="__target-${id} __compat" aria-hidden></a>`
+      }
+    })
+  }
 }

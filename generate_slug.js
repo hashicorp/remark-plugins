@@ -3,6 +3,7 @@ module.exports = function generateSlug(headline, links = []) {
     .toLowerCase()
     .trim()
     .replace(/<\/?[^>]*>/g, '') // Strip links
+    .replace(/\(\(#.*?\)\)/g, '') // Strip anchor link aliases
     .replace(/\W+/g, '-') // Whitespace to '-'
     .replace(/-+/g, '-') // Collapse more than one '-'
     .replace(/^\-/g, '') // Remove leading '-'
@@ -25,6 +26,7 @@ module.exports.generateAriaLabel = function generateAriaLabel(headline) {
   return headline
     .toLowerCase()
     .replace(/<\/?[^>]*>/g, '') // Strip html
+    .replace(/\(\(#.*?\)\)/g, '') // Strip anchor link aliases
     .replace(/^\-/g, '') // Remove leading '-'
     .replace(/\-$/g, '') // Remove trailing '-'
     .replace(/\W+/g, ' ') // Collapse whitespace

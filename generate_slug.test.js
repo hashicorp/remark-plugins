@@ -26,5 +26,12 @@ test('downcases', () => {
 })
 
 test('generates aria label', () => {
-  // TODO
+  expect(generateSlug.generateAriaLabel('foo bar <a>wow</a>')).toEqual(
+    'foo bar wow'
+  )
+  expect(generateSlug.generateAriaLabel('foo bar ((#wow))')).toEqual('foo bar')
+})
+
+test('removes anchor link aliases', () => {
+  expect(generateSlug('foo bar ((#wow))')).toEqual('foo-bar')
 })

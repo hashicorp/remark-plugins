@@ -47,6 +47,18 @@ Content here...
 
 Since the `__target` element carries the `id` rather than the headline, it can be positioned independently to pad the headline off the top of the page if necessary, which is the case any time we use a "sticky" navigation. Also worth noting is that the `__target` and `__permalink` elements carry a category identifier after their classname, `h` for "heading" and `lic` for "list inline code", in order to make styling super clear and avoid any chance for conflicts.
 
+## Anchor Link Aliases
+
+This plugin also adds the ability to add **anchor link aliases** via markdown directly. Aliases give authors the ability to specify additional anchors that they would like to link to an existing anchor link. Here's an example of how this might look:
+
+```md
+# Headline ((#alias, #alias-2))
+
+- `code_block` ((#alias-3)) further text, etc
+```
+
+This markup would ensure that `#alias` and `#alias-2` also link to `#headline`, and that `#alias-3` also links to `#code_block`. Any number of aliases can be specified as long as they are in this exact format. Anything following a headline or initial inline code element within a list item will be used as aliases and removed from the output.
+
 ## Options
 
 - `compatibilitySlug` _(function, optional)_ - if present, will generate an additional target element using a custom slug creation algorithm. Accepts a function with the following signature `fn(text: string)`. The `text` argument is the headline text, if the `compatibilitySlug` function generates an idential slug as the default, it will not be added at all.
