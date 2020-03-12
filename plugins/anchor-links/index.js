@@ -45,10 +45,22 @@ module.exports = function anchorLinksPlugin({
 
 function processHeading(node, compatibilitySlug, links) {
   // a heading can contain multiple nodes including text, html, etc
-  // we stringify the node here to get its literal text contents
-  const text = remark()
-    .use(stringify)
-    .stringify(node)
+  // we try to stringify the node here to get its literal text contents
+  // if that fails due to nonstandard nodes etc. we take a simpler route
+  // for example, if using mdx, html nodes are encoded as "jsx" which is
+  // not a type that standard remark recognizes. we can't accommodate all
+  // types of custom remark setups, so we simply fall back if it doesn't work
+  let text
+  try {
+    text = remark()
+      .use(stringify)
+      .stringify(node)
+  } catch (_) {
+    text = node.children.reduce((m, s) => {
+      if (s.value) m += s.value
+      return m
+    }, '')
+  }
 
   // generate the slug and add a target element to the headline
   const slug = generateSlug(text, links)
