@@ -61,17 +61,17 @@ This markup would ensure that `#alias` and `#alias-2` also link to `#headline`, 
 
 This feature is inteded to be used **very sparingly**. It is a nonstandard markdown feature which we do our best to avoid as an organization. Let's walk through a couple situations where this syntax could be used and examine when it's appropriate.
 
-- _You have written a headline, and would like to add a custom "vanity" permalink, to ensure that it's short and memorable._
+- You have written a headline, and would like to add a custom "vanity" permalink, to ensure that it's short and memorable.
 
-  🚫 This is not an appropriate use on an anchor link alias. As a custom, nonstandard markdown feature, we need to use this functionality sparingly, only when it is essential. This scenario does not qualify as essential.
+  🚫 **This is not an appropriate use on an anchor link alias.** As a custom, nonstandard markdown feature, we need to use this functionality sparingly, only when it is essential. This scenario does not qualify as essential.
 
-- _You are changing an existing headline that is linked to internally, which you know will change its permalink slug. It's quicker and easier to add an alias than to find-and-replace all the internal links to the anchor._
+- You are changing an existing headline that is linked to internally, which you know will change its permalink slug. It's quicker and easier to add an alias than to find-and-replace all the internal links to the anchor.
 
-  🚫 This is not an appropriate use of an anchor link alias. Any time a headline changes, internal links to its permalink should be manually updated to its new permalink using find-and-replace.
+  🚫 **This is not an appropriate use of an anchor link alias.** Any time a headline changes, internal links to its permalink should be manually updated to its new permalink using find-and-replace.
 
-- _You are changing an existing headline, and there are many external links to this headline which we are unable to fix._
+- You are changing an existing headline, and there are many external links to this headline which we are unable to fix.
 
-  ✅ This is the only appropriate scenario to be using anchor link aliases. We track statistics on all anchor links via web analytics - if a headline's text must be changed, ask your manager and/or the digital dev team to check the analytics dashboard and see if there is significant externally-driven traffic to its permalink. If so, an anchor link alias should be used to avoid breaking users' expectations.
+  ✅ **This is the only appropriate scenario to be using anchor link aliases.** We track statistics on all anchor links via web analytics - if a headline's text must be changed, ask your manager and/or the digital dev team to check the analytics dashboard and see if there is significant externally-driven traffic to its permalink. If so, an anchor link alias should be used to avoid breaking users' expectations.
 
 ## Options
 
