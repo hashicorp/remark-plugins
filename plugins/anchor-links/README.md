@@ -57,7 +57,7 @@ This plugin also adds the ability to add **anchor link aliases** via markdown di
 - `code_block` ((#alias-3)) further text, etc
 ```
 
-This markup would ensure that `#alias` and `#alias-2` also link to `#headline`, and that `#alias-3` also links to `#code_block`. Any number of aliases can be specified as long as they are in this exact format - `((#slug))` or `((#slug, slug2, slug3, etc))`. Anything following a headline or initial inline code element within a list item will be used as aliases and removed from the output. If you are using this syntax and you still see it in the output, this typically means there was an error in the syntax used.
+This markup would ensure that `#alias` and `#alias-2` also link to `#headline`, and that `#alias-3` also links to `#code_block`. Any number of aliases can be specified as long as they are in this exact format - for a single alias `((#slug))`, or for multiple, `((#slug, #slug2, #slug3))` etc. Anything following a headline or initial inline code element within a list item will be used as aliases and removed from the output. If you are using this syntax and you still see it in the output, this typically means there was an error in the syntax used.
 
 This feature is inteded to be used **very sparingly**. It is a nonstandard markdown feature which we do our best to avoid as an organization. Let's walk through a couple situations where this syntax could be used and examine when it's appropriate.
 
