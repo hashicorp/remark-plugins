@@ -6,17 +6,13 @@ A potpourri of [remark](https://github.com/remarkjs/remark) plugins used by [Has
 
 [MDX](https://mdxjs.com) uses [remark](https://github.com/remarkjs/remark) internally to process and transform markdown via [plugins](https://github.com/remarkjs/remark/blob/master/doc/plugins.md#list-of-plugins). We use MDX to process markdown content to build out our docs, learning guides, and write rich content from our CMS. This set of plugins ensures that written markdown is translated properly into markup.
 
+### Anchor Links
+
+The `anchorLinks` plugin adds anchor links to headings and when a list begins with an `inline code` element so that users are able to easily link to a specific place even if it is further down the page. See [its readme](plugins/anchor-links/README.md) for more details.
+
 ### Include Markdown
 
 The `includeMarkdown` plugin gives authors the ability to use a directive like `@include "filename.md" to import markdown from a separate file, like a partial. See [its readme](plugins/include-markdown/README.md) for more details.
-
-### Linkable Headings
-
-The `headingLinkable` plugin adds anchor links to our headings so that users are able to easily link to a specific heading even if it is further down the page. See [its readme](plugins/heading-linkable/README.md) for more details.
-
-### Linkable Inline Code
-
-The `inlineCodeLinkable` plugin adds anchor links when a list begins with an `inline code` element. In many places in our docs, there are lists of methods that are structured this way, and this plugin makes it easier for users to link to a specific method. See [its readme](plugins/inline-code-linkable/README.md) for more details.
 
 ### Custom Alerts
 
@@ -32,10 +28,10 @@ Each of the plugins are individually exposed from the default export from this m
 
 ```js
 const mdx = require('@mdx-js/mdx')
-const {typography, headingLinkable} = require('@hashicorp/remark-plugins')
+const {typography, anchorLinks} = require('@hashicorp/remark-plugins')
 
 console.log(mdx.sync('some markdown content', {
-  remarkPlugins: [typography, headingLinkable]
+  remarkPlugins: [typography, anchorLinks]
 })
 ```
 
@@ -46,9 +42,11 @@ const mdx = require('@mdx-js/mdx')
 const {allPlugins} = require('@hashicorp/remark-plugins')
 
 console.log(mdx.sync('some markdown content', {
-  remarkPlugins: allPlugins
+  remarkPlugins: allPlugins(/* options */)
 })
 ```
+
+Plugin options can be passed to `allPlugins` as an object, with the keys being plugin names. For example, to pass options to `headingLinkable`, you could call `allPlugins({ headingLinkable: { foo: 'bar' } })`.
 
 If you are using `next-hashicorp`, all of these plugins will be included by default.
 

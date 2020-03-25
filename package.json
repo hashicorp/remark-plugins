@@ -1,20 +1,19 @@
 {
   "name": "@hashicorp/remark-plugins",
   "description": "A potpourri of remark plugins used to process .mdx files",
-  "version": "1.0.0",
-  "author": "Kevin Pruett",
+  "version": "2.0.3-5",
+  "author": "Jeff Escalante",
   "bugs": "https://github.com/hashicorp/remark-plugins/issues",
   "contributors": [
-    "Jeff Escalante"
+    "Kevin Pruett"
   ],
   "dependencies": {
     "github-slugger": "^1.2.1",
     "remark": "^11.0.1",
-    "remark-autolink-headings": "^5.2.1",
-    "remark-slug": "^5.1.2",
     "to-vfile": "^6.0.0",
     "unist-util-flatmap": "^1.0.0",
     "unist-util-is": "^4.0.0",
+    "unist-util-map": "^2.0.1",
     "unist-util-visit": "^2.0.0"
   },
   "devDependencies": {
@@ -22,7 +21,11 @@
     "@types/jest": "^24.0.18",
     "jest": "^24.9.0",
     "mdast-util-to-string": "^1.0.6",
-    "remark-html": "^10.0.0"
+    "normalize-newline": "^3.0.0",
+    "rehype-parse": "^6.0.2",
+    "rehype-stringify": "^6.0.1",
+    "remark-html": "^10.0.0",
+    "remark-rehype": "^5.0.0"
   },
   "homepage": "https://github.com/hashicorp/remark-plugins#readme",
   "keywords": [],
@@ -33,7 +36,7 @@
   },
   "repository": "https://github.com/hashicorp/remark-plugins",
   "scripts": {
-    "test": "jest --verbose",
-    "publish": "npx np"
+    "publish": "npx np",
+    "test": "jest --verbose"
   }
 }

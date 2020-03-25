@@ -1,8 +1,8 @@
 const path = require('path')
 const { readSync } = require('to-vfile')
 const remark = require('remark')
-const flatMap = require('unist-util-flatmap')
 const includeMarkdown = require('./index.js')
+const normalizeNewline = require('normalize-newline')
 
 describe('include-markdown', () => {
   test('basic', () => {
@@ -22,7 +22,7 @@ describe('include-markdown', () => {
           if (err) throw err
         })
     ).toThrow(
-      /The @include file path at .*fixtures\/bskjbfkhj was not found.\n\nInclude Location: .*fixtures\/invalid-path\.md:3:1/gm
+      /The @include file path at .*bskjbfkhj was not found\.\s+Include Location: .*invalid-path\.md:3:1/gm
     )
   })
 
@@ -41,5 +41,7 @@ describe('include-markdown', () => {
 })
 
 function loadFixture(name) {
-  return readSync(path.join(__dirname, 'fixtures', `${name}.md`), 'utf8')
+  const vfile = readSync(path.join(__dirname, 'fixtures', `${name}.md`), 'utf8')
+  vfile.contents = normalizeNewline(vfile.contents)
+  return vfile
 }

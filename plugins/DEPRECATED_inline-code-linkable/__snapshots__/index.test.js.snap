@@ -1,0 +1,16 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`real world output, deep nested lists 1`] = `
+"<h4>Field Reference</h4>
+<ul>
+<li id=\\"inlinecode-taskstates\\"><a href=\\"#inlinecode-taskstates\\"><code>TaskStates</code></a> - A map of tasks to their current state and the latest events
+that have effected the state. <code>TaskState</code> objects contain the following
+fields:<ul>
+<li id=\\"inlinecode-state\\"><a href=\\"#inlinecode-state\\"><code>State</code></a>: The task's current state. It can have one of the following
+values:<ul>
+<li id=\\"inlinecode-taskstatepending\\"><a href=\\"#inlinecode-taskstatepending\\"><code>TaskStatePending</code></a> - The task is waiting to be run, either for the first
+time or due to a restart.</li>
+</ul></li>
+</ul></li>
+</ul>"
+`;
