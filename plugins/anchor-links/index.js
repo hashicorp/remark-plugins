@@ -8,13 +8,13 @@ const stringify = require('remark-stringify')
 // code blocks.
 module.exports = function anchorLinksPlugin({
   compatibilitySlug,
-  listWithInlineCodePrefix
+  listWithInlineCodePrefix,
 } = {}) {
   return function transformer(tree) {
     // this array keeps track of existing slugs to prevent duplicates per-page
     const links = []
 
-    return map(tree, node => {
+    return map(tree, (node) => {
       // since we are adding anchor links to two separate patterns: headings and
       // lists with inline code, we first sort into these categories.
       //
@@ -44,33 +44,17 @@ module.exports = function anchorLinksPlugin({
 }
 
 function processHeading(node, compatibilitySlug, links) {
-  // a heading can contain multiple nodes including text, html, etc
-  // we try to stringify the node here to get its literal text contents
-  // if that fails due to nonstandard nodes etc. we take a simpler route
-  // for example, if using mdx, html nodes are encoded as "jsx" which is
-  // not a type that standard remark recognizes. we can't accommodate all
-  // types of custom remark setups, so we simply fall back if it doesn't work
-  let text
-  try {
-    text = remark()
-      .use(stringify)
-      .stringify(node)
-  } catch (_) {
-    text = node.children.reduce((m, s) => {
-      if (s.value) m += s.value
-      return m
-    }, '')
-  }
+  const text = stringifyChildNodes(node)
 
   // generate the slug and add a target element to the headline
   const slug = generateSlug(text, links)
   node.children.unshift({
     type: 'html',
-    value: `<a class="__target-h" id="${slug}" aria-hidden></a>`
+    value: `<a class="__target-h" id="${slug}" aria-hidden></a>`,
   })
 
   // handle anchor link aliases
-  const aliases = processAlias(node.children[1], 'h')
+  const aliases = processAlias(node, 'h', 1)
   if (aliases) node.children.unshift(...aliases)
 
   // if the compatibilitySlug option is present, we generate it and add to the
@@ -80,7 +64,7 @@ function processHeading(node, compatibilitySlug, links) {
     if (slug !== slug2) {
       node.children.unshift({
         type: 'html',
-        value: `<a class="__target-h __compat" id="${slug2}" aria-hidden></a>`
+        value: `<a class="__target-h __compat" id="${slug2}" aria-hidden></a>`,
       })
     }
   }
@@ -91,7 +75,7 @@ function processHeading(node, compatibilitySlug, links) {
     type: 'html',
     value: `<a class="__permalink-h" href="#${slug}" aria-label="${generateSlug.generateAriaLabel(
       text
-    )} permalink">»</a>`
+    )} permalink">»</a>`,
   })
 
   return node
@@ -104,14 +88,13 @@ function processListWithInlineCode(liNode, pNode, codeNode, prefix, links) {
   const slug = generateSlug(`${prefix ? `${prefix}-` : ''}${text}`, links)
 
   // handle anchor link aliases
-  const nextNode = pNode.children[1]
-  const aliases = processAlias(nextNode, 'lic')
+  const aliases = processAlias(pNode, 'lic', 1)
   if (aliases) liNode.children.unshift(...aliases)
 
   // add the target element with the right slug
   liNode.children.unshift({
     type: 'html',
-    value: `<a id="${slug}" class="__target-lic" aria-hidden></a>`
+    value: `<a id="${slug}" class="__target-lic" aria-hidden></a>`,
   })
 
   // wrap permalink element around child <code> node, so clicking will set
@@ -122,35 +105,112 @@ function processListWithInlineCode(liNode, pNode, codeNode, prefix, links) {
     data: {
       hProperties: {
         ariaLabel: `${generateSlug.generateAriaLabel(text)} permalink`,
-        class: '__permalink-lic'
-      }
+        class: '__permalink-lic',
+      },
     },
-    children: [pNode.children[0]]
+    children: [pNode.children[0]],
   }
 
   return liNode
 }
 
-function processAlias(node, id) {
+function processAlias(node, id, startIndex = 0) {
+  // disqualify input that couldn't possibly be an alias
+  if (
+    !node ||
+    !node.children ||
+    !node.children.length ||
+    node.children.length <= startIndex
+  )
+    return
+
   // we look for ((#foo)) or ((#foo, #bar))
   const aliasRegex = /\s*\(\((#.*?)\)\)/
 
-  if (node && node.value && node.value.match(aliasRegex)) {
-    // if we have a match, format into an array of slugs without the '#'
-    const aliases = node.value
-      .match(aliasRegex)[1]
-      .split(',')
-      .map(s => s.trim().replace(/^#/, ''))
+  // it's possible that the pattern could be broken into multiple nodes
+  // so we have to check serially. this happens, for example, if an alias
+  // contains an underscore like ((#\_foo)), which has to be escaped, bc
+  // markdown. our parser will split escaped characters into multiple nodes,
+  // for some reason.
+  //
+  // the most common scenario, however, is that the first node will match the
+  // entirely, so we check for that first.
+  const firstNode = node.children[startIndex]
+  if (firstNode.value && firstNode.value.match(aliasRegex)) {
+    return _processAliases(firstNode, id, aliasRegex)
+  }
 
-    // then remove the entire match from the element's actual text
-    node.value = node.value.replace(aliasRegex, '')
+  // next, we check for the more unusual scenario of the pattern being broken into
+  // multiple nodes. the double parens are a "minimum viable match" so we'll look for
+  // that in the first text node. if we match this, we can continue our search.
+  const minimumViableRegex = /\s*\(\(/
+  const endRegex = /\)\)/
+  if (firstNode.value && firstNode.value.match(minimumViableRegex)) {
+    // now we need to figure out where the end of our pattern, "))", is. we find
+    // this, then squash the entire thing together into a single node. any unusual nodes
+    // other than text will be discarded. we can't deal with that, honestly.
+    const endIndex = node.children.findIndex(
+      (node) => node.value && node.value.match(endRegex)
+    )
 
-    // finally we return an array of target elements using each alias given
-    return aliases.map(alias => {
-      return {
-        type: 'html',
-        value: `<a class="__target-${id} __compat" id="${alias}" aria-hidden></a>`
-      }
+    // we know where the beginning and end nodes containing our pattern are, so we combine
+    // their values into a single string
+    const combinedText = node.children
+      .slice(startIndex, endIndex + 1)
+      .reduce((m, s) => {
+        if (s.value) m += s.value
+        return m
+      }, '')
+
+    // now, we replace all of the old broken up pieces with a single, combined node containing
+    // the full text of the alias
+    node.children.splice(startIndex, endIndex + 1, {
+      type: 'text',
+      value: combinedText,
     })
+
+    // and then proceed to process it as if none of this ever happened!
+    return _processAliases(node.children[startIndex], id, aliasRegex)
   }
 }
+
+function _processAliases(node, id, aliasRegex) {
+  // if we have a match, format into an array of slugs without the '#'
+  const aliases = node.value
+    .match(aliasRegex)[1]
+    .split(',')
+    .map((s) => s.trim().replace(/^#/, ''))
+
+  // then remove the entire match from the element's actual text
+  node.value = node.value.replace(aliasRegex, '')
+
+  // finally we return an array of target elements using each alias given
+  return aliases.map((alias) => {
+    return {
+      type: 'html',
+      value: `<a class="__target-${id} __compat" id="${alias}" aria-hidden></a>`,
+    }
+  })
+}
+
+// a heading can contain multiple nodes including text, html, etc
+// we try to stringify the node here to get its literal text contents
+// if that fails due to nonstandard nodes etc. we take a simpler route
+// for example, if using mdx, html nodes are encoded as "jsx" which is
+// not a type that standard remark recognizes. we can't accommodate all
+// types of custom remark setups, so we simply fall back if it doesn't work
+function stringifyChildNodes(node) {
+  let text
+  try {
+    text = remark().use(stringify).stringify(node)
+  } catch (_) {
+    text = node.children.reduce((m, s) => {
+      if (s.value) m += s.value
+      return m
+    }, '')
+  }
+  return text
+}
+
+// check first node for at least ((
+// if that matches,
