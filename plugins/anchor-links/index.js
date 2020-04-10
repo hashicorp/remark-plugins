@@ -153,6 +153,9 @@ function processAlias(node, id, startIndex = 0) {
       (node) => node.value && node.value.match(endRegex)
     )
 
+    // If there is a "((" pattern without a closing, never mind
+    if (endIndex < 0) return
+
     // we know where the beginning and end nodes containing our pattern are, so we combine
     // their values into a single string
     const combinedText = node.children

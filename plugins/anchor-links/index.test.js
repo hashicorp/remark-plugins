@@ -265,13 +265,19 @@ describe('anchor-links', () => {
       )
     })
 
-    expect(execute(['- `baz` ((#\\_bar)) text'])).toMatch(
+    expect(
+      execute(['- `baz` ((#\\_bar)) text', '- `quux` ((#foo wow'])
+    ).toMatch(
       [
         '<ul>',
         expectedInlineCodeResult({
           slug: 'baz',
           compatSlugs: ['_bar'],
           afterCode: ' text',
+        }),
+        expectedInlineCodeResult({
+          slug: 'quux',
+          afterCode: ' ((#foo wow',
         }),
         '</ul>',
       ].join('\n')
