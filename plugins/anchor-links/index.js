@@ -36,6 +36,7 @@ module.exports = function anchorLinksPlugin({
         liNode,
         pNode,
         codeNode,
+        compatibilitySlug,
         listWithInlineCodePrefix,
         links
       )
@@ -54,13 +55,14 @@ function processHeading(node, compatibilitySlug, links) {
   })
 
   // handle anchor link aliases
-  const aliases = processAlias(node, 'h', 1)
-  if (aliases) node.children.unshift(...aliases)
+  const aliases = processAlias(node, 1)
+  if (aliases) node.children.unshift(...aliasesToNodes(aliases, 'h'))
 
-  // if the compatibilitySlug option is present, we generate it and add to the
-  // headline if it doesn't already match the existing slug
+  // if the compatibilitySlug option is present, we generate it and add it
+  // if it doesn't already match the existing slug
+  let slug2
   if (compatibilitySlug) {
-    const slug2 = compatibilitySlug(text)
+    slug2 = compatibilitySlug(text)
     if (slug !== slug2) {
       node.children.unshift({
         type: 'html',
@@ -69,11 +71,17 @@ function processHeading(node, compatibilitySlug, links) {
     }
   }
 
+  // - if an alias is defined, use that
+  // - if not, if a compatibilitySlug is defined, use that
+  // - otherwise use the auto-generated slug
+  const permalinkSlug =
+    aliases && aliases.length ? aliases[0] : compatibilitySlug ? slug2 : slug
+
   // finally, we generate an "permalink" element that can be used to get a quick
   // anchor link for any given headline
   node.children.unshift({
     type: 'html',
-    value: `<a class="__permalink-h" href="#${slug}" aria-label="${generateSlug.generateAriaLabel(
+    value: `<a class="__permalink-h" href="#${permalinkSlug}" aria-label="${generateSlug.generateAriaLabel(
       text
     )} permalink">»</a>`,
   })
@@ -81,15 +89,35 @@ function processHeading(node, compatibilitySlug, links) {
   return node
 }
 
-function processListWithInlineCode(liNode, pNode, codeNode, prefix, links) {
+function processListWithInlineCode(
+  liNode,
+  pNode,
+  codeNode,
+  compatibilitySlug,
+  prefix,
+  links
+) {
   // construct an id/slug based on value of <code> node
   // if the prefix option is present, add it before the slug name
   const text = codeNode.value
   const slug = generateSlug(`${prefix ? `${prefix}-` : ''}${text}`, links)
 
   // handle anchor link aliases
-  const aliases = processAlias(pNode, 'lic', 1)
-  if (aliases) liNode.children.unshift(...aliases)
+  const aliases = processAlias(pNode, 1)
+  if (aliases) liNode.children.unshift(...aliasesToNodes(aliases, 'lic'))
+
+  // if the compatibilitySlug option is present, we generate it and add it
+  // if it doesn't already match the existing slug
+  let slug2
+  if (compatibilitySlug) {
+    slug2 = compatibilitySlug(text)
+    if (slug !== slug2) {
+      liNode.children.unshift({
+        type: 'html',
+        value: `<a class="__target-h __compat" id="${slug2}" aria-hidden></a>`,
+      })
+    }
+  }
 
   // add the target element with the right slug
   liNode.children.unshift({
@@ -97,11 +125,17 @@ function processListWithInlineCode(liNode, pNode, codeNode, prefix, links) {
     value: `<a id="${slug}" class="__target-lic" aria-hidden></a>`,
   })
 
+  // - if an alias is defined, use that
+  // - if not, if a compatibilitySlug is defined, use that
+  // - otherwise use the auto-generated slug
+  const permalinkSlug =
+    aliases && aliases.length ? aliases[0] : compatibilitySlug ? slug2 : slug
+
   // wrap permalink element around child <code> node, so clicking will set
   // the url to the anchor link.
   pNode.children[0] = {
     type: 'link',
-    url: `#${slug}`,
+    url: `#${permalinkSlug}`,
     data: {
       hProperties: {
         ariaLabel: `${generateSlug.generateAriaLabel(text)} permalink`,
@@ -114,7 +148,7 @@ function processListWithInlineCode(liNode, pNode, codeNode, prefix, links) {
   return liNode
 }
 
-function processAlias(node, id, startIndex = 0) {
+function processAlias(node, startIndex = 0) {
   // disqualify input that couldn't possibly be an alias
   if (
     !node ||
@@ -137,7 +171,7 @@ function processAlias(node, id, startIndex = 0) {
   // entirely, so we check for that first.
   const firstNode = node.children[startIndex]
   if (firstNode.value && firstNode.value.match(aliasRegex)) {
-    return _processAliases(firstNode, id, aliasRegex)
+    return _processAliases(firstNode, aliasRegex)
   }
 
   // next, we check for the more unusual scenario of the pattern being broken into
@@ -173,11 +207,11 @@ function processAlias(node, id, startIndex = 0) {
     })
 
     // and then proceed to process it as if none of this ever happened!
-    return _processAliases(node.children[startIndex], id, aliasRegex)
+    return _processAliases(node.children[startIndex], aliasRegex)
   }
 }
 
-function _processAliases(node, id, aliasRegex) {
+function _processAliases(node, aliasRegex) {
   // if we have a match, format into an array of slugs without the '#'
   const aliases = node.value
     .match(aliasRegex)[1]
@@ -187,7 +221,12 @@ function _processAliases(node, id, aliasRegex) {
   // then remove the entire match from the element's actual text
   node.value = node.value.replace(aliasRegex, '')
 
-  // finally we return an array of target elements using each alias given
+  // and return the aliases
+  return aliases
+}
+
+// This converts a raw array of aliases to html "target" nodes
+function aliasesToNodes(aliases, id) {
   return aliases.map((alias) => {
     return {
       type: 'html',
@@ -214,6 +253,3 @@ function stringifyChildNodes(node) {
   }
   return text
 }
-
-// check first node for at least ((
-// if that matches,

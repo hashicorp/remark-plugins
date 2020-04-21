@@ -112,7 +112,7 @@ describe('anchor-links', () => {
       )
     })
 
-    test('generates an extra slug if the argument is provided', () => {
+    test('generates an extra slug if the compatibilitySlug argument is provided', () => {
       expect(
         execute('# hello world', { compatibilitySlug: (_) => 'foo' })
       ).toMatch(
@@ -149,6 +149,14 @@ describe('anchor-links', () => {
           slug: 'hello-world',
           text: 'hello world',
           compatSlugs: ['_foo'],
+        })
+      )
+
+      expect(execute('# hello world ((#foo, #bar))')).toMatch(
+        expectedHeadingResult({
+          slug: 'hello-world',
+          text: 'hello world',
+          compatSlugs: ['foo', 'bar'],
         })
       )
     })
@@ -212,6 +220,33 @@ describe('anchor-links', () => {
           }),
           '</ul>',
         ].join('\n')
+      )
+    })
+
+    test('generates an extra slug if the compatibilitySlug argument is provided', () => {
+      expect(
+        execute('- `hello world`', { compatibilitySlug: (_) => 'foo' })
+      ).toMatch(
+        '<ul>',
+        expectedInlineCodeResult({
+          slug: 'hello-world',
+          text: 'hello world',
+          compatSlugs: ['foo'],
+        }),
+        '</ul>'
+      )
+    })
+
+    test('does not render duplicate compatibility slugs', () => {
+      expect(
+        execute('- `hello world`', { compatibilitySlug: (_) => 'hello-world' })
+      ).toMatch(
+        '<ul>',
+        expectedInlineCodeResult({
+          slug: 'hello-world',
+          text: 'hello world',
+        }),
+        '</ul>'
       )
     })
 
@@ -297,9 +332,9 @@ function execute(input, options = {}) {
 function expectedHeadingResult({ slug, compatSlugs, aria, text, level }) {
   const res = [`<h${level || '1'}>`]
   res.push(
-    `<a class="__permalink-h" href="#${slug}" aria-label="${
-      aria || text || slug
-    } permalink">»</a>`
+    `<a class="__permalink-h" href="#${
+      compatSlugs && compatSlugs.length ? compatSlugs[0] : slug
+    }" aria-label="${aria || text || slug} permalink">»</a>`
   )
 
   if (compatSlugs) {
@@ -333,9 +368,9 @@ function expectedInlineCodeResult({
     )
   }
   res.push(
-    `<a href="#${slug}" aria-label="${
-      aria || code || slug
-    } permalink" class="__permalink-lic">`
+    `<a href="#${
+      compatSlugs && compatSlugs.length ? compatSlugs[0] : slug
+    }" aria-label="${aria || code || slug} permalink" class="__permalink-lic">`
   )
   res.push(`<code>${code || slug}</code>`)
   res.push('</a>')
