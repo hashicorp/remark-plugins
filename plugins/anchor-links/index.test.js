@@ -173,6 +173,7 @@ describe('anchor-links', () => {
           '- `code_with_text_after` - explanation of code',
           '- text `followed_by_code` then more text',
           '- <a>html</a> `followed_by_code` then more text',
+          '- `code_with_text_and_link` - heres [a link](#foo) and some more text',
           '',
           'some more text',
         ])
@@ -191,6 +192,10 @@ describe('anchor-links', () => {
           }),
           '<li>text <code>followed_by_code</code> then more text</li>',
           '<li><a>html</a> <code>followed_by_code</code> then more text</li>',
+          expectedInlineCodeResult({
+            slug: 'code_with_text_and_link',
+            afterCode: ' - heres <a href="#foo">a link</a> and some more text',
+          }),
           '</ul>',
           '<p>some more text</p>',
         ].join('\n')
@@ -301,7 +306,11 @@ describe('anchor-links', () => {
     })
 
     expect(
-      execute(['- `baz` ((#\\_bar)) text', '- `quux` ((#foo wow'])
+      execute([
+        '- `baz` ((#\\_bar)) text',
+        '- `quux` ((#foo wow',
+        '- `foo` ((#\\_wow)) text [link](#test) more',
+      ])
     ).toMatch(
       [
         '<ul>',
@@ -313,6 +322,11 @@ describe('anchor-links', () => {
         expectedInlineCodeResult({
           slug: 'quux',
           afterCode: ' ((#foo wow',
+        }),
+        expectedInlineCodeResult({
+          slug: 'foo',
+          compatSlugs: ['_wow'],
+          afterCode: ' text <a href="#test">link</a> more',
         }),
         '</ul>',
       ].join('\n')
