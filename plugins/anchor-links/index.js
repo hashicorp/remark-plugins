@@ -201,7 +201,7 @@ function processAlias(node, startIndex = 0) {
 
     // now, we replace all of the old broken up pieces with a single, combined node containing
     // the full text of the alias
-    node.children.splice(startIndex, endIndex + 1, {
+    node.children.splice(startIndex, endIndex, {
       type: 'text',
       value: combinedText,
     })
