@@ -177,7 +177,7 @@ function processAlias(node, startIndex = 0) {
   // next, we check for the more unusual scenario of the pattern being broken into
   // multiple nodes. the double parens are a "minimum viable match" so we'll look for
   // that in the first text node. if we match this, we can continue our search.
-  const minimumViableRegex = /\s*\(\(/
+  const minimumViableRegex = /\s*\(\(#/
   const endRegex = /\)\)/
   if (firstNode.value && firstNode.value.match(minimumViableRegex)) {
     // now we need to figure out where the end of our pattern, "))", is. we find
