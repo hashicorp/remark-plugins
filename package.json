@@ -1,7 +1,7 @@
 {
   "name": "@hashicorp/remark-plugins",
   "description": "A potpourri of remark plugins used to process .mdx files",
-  "version": "2.2.1",
+  "version": "2.2.2",
   "author": "Jeff Escalante",
   "bugs": "https://github.com/hashicorp/remark-plugins/issues",
   "contributors": [
@@ -24,6 +24,7 @@
     "normalize-newline": "^3.0.0",
     "rehype-parse": "^6.0.2",
     "rehype-stringify": "^6.0.1",
+    "release": "^6.1.0",
     "remark-html": "^11.0.1",
     "remark-rehype": "^6.0.0"
   },
@@ -36,6 +37,9 @@
   },
   "repository": "https://github.com/hashicorp/remark-plugins",
   "scripts": {
-    "test": "jest --verbose"
+    "test": "jest --verbose",
+    "release:patch": "release patch && npm publish",
+    "release:minor": "release minor && npm publish",
+    "release:major": "release major && npm publish"
   }
 }
