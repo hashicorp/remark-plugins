@@ -159,6 +159,15 @@ describe('anchor-links', () => {
           compatSlugs: ['foo', 'bar'],
         })
       )
+
+      // this *shouldn't* work but currently does, so it has coverage
+      expect(execute('# hello world ((#foo)) more text')).toMatch(
+        expectedHeadingResult({
+          slug: 'hello-world-more-text',
+          text: 'hello world more text',
+          compatSlugs: ['foo'],
+        })
+      )
     })
   })
 
@@ -286,7 +295,11 @@ describe('anchor-links', () => {
 
     test('anchor aliases', () => {
       expect(
-        execute(['- `foo` ((#bar)) - other text', '- `foo` ((#baz, #quux))'])
+        execute([
+          '- `foo` ((#bar)) - other text',
+          '- `foo` ((#baz, #quux))',
+          '- `foo` some text ((#wow)) more text', // this one *shouldn't* work but it does currently
+        ])
       ).toMatch(
         [
           '<ul>',
@@ -299,6 +312,12 @@ describe('anchor-links', () => {
             slug: 'foo-1',
             code: 'foo',
             compatSlugs: ['baz', 'quux'],
+          }),
+          expectedInlineCodeResult({
+            slug: 'foo-2',
+            code: 'foo',
+            compatSlugs: ['wow'],
+            afterCode: ' some text more text',
           }),
           '</ul>',
         ].join('\n')

@@ -158,7 +158,24 @@ function processAlias(node, startIndex = 0) {
   )
     return
 
-  // we look for ((#foo)) or ((#foo, #bar))
+  // with the below regex, we look for ((#foo)) or ((#foo, #bar))
+  //
+  // NOTE: There is a potential improvement in the fidelity of this regex, but it's
+  // an edge case and would make the code more complex, so skipping until we need it.
+  // Will detail here in case its ever needed in the future though.
+  //
+  // Headline nodes include the headline and alias, like "foo ((#bar))", where inline
+  // lists that start with code only include the content directly after the code, like
+  // " ((#bar)) other text". Because of this difference in behavior, this regex does
+  // not make assumptions about *where* the anchor link alias sits in the string. That
+  // means that something like "# foo ((#bar)) baz" would still work for a headline, and
+  // something like "- `foo` some text ((#bar)) more text" would still work for an inline
+  // list with code. This behavior should not be permitted -- the alias should sit directly
+  // _after_ the headline or inline code.
+  //
+  // It could be enforced by differentiating the regexes that the two types use, such that
+  // the inline list code uses `/^\s*\(\((#.*?)\)\)/` and headline uses `/\s*\(\((#.*?)\)\)$/`
+  // but at the moment this seems like unnecessary complexity.
   const aliasRegex = /\s*\(\((#.*?)\)\)/
 
   // it's possible that the pattern could be broken into multiple nodes
