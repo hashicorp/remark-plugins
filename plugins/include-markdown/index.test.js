@@ -14,6 +14,26 @@ describe('include-markdown', () => {
       })
   })
 
+  test('include mdx', () => {
+    remark()
+      .use(includeMarkdown)
+      .process(loadFixture('mdx-format'), (err, file) => {
+        if (err) throw new Error(err)
+        expect(file.contents).toBe(loadFixture('mdx-format.expected').contents)
+      })
+  })
+
+  test('include non-markdown', () => {
+    remark()
+      .use(includeMarkdown)
+      .process(loadFixture('non-markdown'), (err, file) => {
+        if (err) throw new Error(err)
+        expect(file.contents).toBe(
+          loadFixture('non-markdown.expected').contents
+        )
+      })
+  })
+
   test('invalid path', () => {
     expect(() =>
       remark()
@@ -29,7 +49,7 @@ describe('include-markdown', () => {
   test('resolveFrom option', () => {
     remark()
       .use(includeMarkdown, {
-        resolveFrom: path.join(__dirname, 'fixtures/nested')
+        resolveFrom: path.join(__dirname, 'fixtures/nested'),
       })
       .process(loadFixture('resolve-from'), (err, file) => {
         if (err) throw new Error(err)
