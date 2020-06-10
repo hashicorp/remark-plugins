@@ -5,7 +5,7 @@ const { readSync } = require('to-vfile')
 
 module.exports = function includeMarkdownPlugin({ resolveFrom } = {}) {
   return function transformer(tree, file) {
-    return flatMap(tree, node => {
+    return flatMap(tree, (node) => {
       if (node.type !== 'paragraph') return [node]
 
       // detect an `@include` statement
@@ -28,11 +28,27 @@ module.exports = function includeMarkdownPlugin({ resolveFrom } = {}) {
         )
       }
 
-      // return the file contents in place of the @include
-      // this takes a couple steps because we allow recursive includes
-      const processor = remark().use(includeMarkdownPlugin, { resolveFrom })
-      const ast = processor.parse(includeContents)
-      return processor.runSync(ast, includeContents).children
+      // if we are including a ".md" or ".mdx" file, we add the contents as processed markdown
+      // if any other file type, they are embedded into a code block
+      if (includePath.match(/\.md(?:x)?$/)) {
+        // return the file contents in place of the @include
+        // this takes a couple steps because we allow recursive includes
+        const processor = remark().use(includeMarkdownPlugin, { resolveFrom })
+        const ast = processor.parse(includeContents)
+        return processor.runSync(ast, includeContents).children
+      } else {
+        // trim trailing newline
+        includeContents.contents = includeContents.contents.trim()
+
+        // return contents wrapped inside a "code" node
+        return [
+          {
+            type: 'code',
+            lang: includePath.match(/\.(\w+)$/)[1],
+            value: includeContents,
+          },
+        ]
+      }
     })
   }
 }
