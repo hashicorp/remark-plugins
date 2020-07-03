@@ -36,10 +36,8 @@ module.exports = function typographyPlugin(options = {}) {
     })
 
     // Add typography classes to list items
-    visit(tree, 'list', (listNode) => {
-      listNode.children.map((node) => {
-        addClassName(node, getClassName('li'))
-      })
+    visit(tree, 'listItem', (node) => {
+      addClassName(node, getClassName('li'))
     })
   }
 }
