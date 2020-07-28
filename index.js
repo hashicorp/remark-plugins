@@ -2,13 +2,14 @@ const anchorLinks = require('./plugins/anchor-links')
 const paragraphCustomAlerts = require('./plugins/paragraph-custom-alerts')
 const typography = require('./plugins/typography')
 const includeMarkdown = require('./plugins/include-markdown')
+const generateSlug = require('./generate_slug')
 
 // allow individual plugins to be pulled out and used
 module.exports = {
   anchorLinks,
   paragraphCustomAlerts,
   typography,
-  includeMarkdown
+  includeMarkdown,
 }
 
 // for easy use of everything at the same time
@@ -16,5 +17,10 @@ module.exports.allPlugins = ({ anchorLinks: anchorLinksOptions } = {}) => [
   includeMarkdown,
   [anchorLinks, anchorLinksOptions],
   paragraphCustomAlerts,
-  typography
+  typography,
 ]
+
+// expose util functions/helpers
+module.exports.utils = {
+  generateSlug,
+}
