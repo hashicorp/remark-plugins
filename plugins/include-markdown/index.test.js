@@ -3,6 +3,7 @@ const { readSync } = require('to-vfile')
 const remark = require('remark')
 const includeMarkdown = require('./index.js')
 const normalizeNewline = require('normalize-newline')
+const eol = require('eol')
 
 describe('include-markdown', () => {
   test('basic', () => {
@@ -64,6 +65,6 @@ describe('include-markdown', () => {
 
 function loadFixture(name) {
   const vfile = readSync(path.join(__dirname, 'fixtures', `${name}.md`), 'utf8')
-  vfile.contents = normalizeNewline(vfile.contents)
+  vfile.contents = eol.lf(normalizeNewline(vfile.contents))
   return vfile
 }
