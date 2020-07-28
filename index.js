@@ -8,13 +8,16 @@ module.exports = {
   anchorLinks,
   paragraphCustomAlerts,
   typography,
-  includeMarkdown
+  includeMarkdown,
 }
 
 // for easy use of everything at the same time
-module.exports.allPlugins = ({ anchorLinks: anchorLinksOptions } = {}) => [
-  includeMarkdown,
+module.exports.allPlugins = ({
+  anchorLinks: anchorLinksOptions,
+  includeMarkdown: includeMarkdownOptions,
+} = {}) => [
+  [includeMarkdown, includeMarkdownOptions],
   [anchorLinks, anchorLinksOptions],
   paragraphCustomAlerts,
-  typography
+  typography,
 ]
