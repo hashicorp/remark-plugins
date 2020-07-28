@@ -28,6 +28,10 @@ describe('include-markdown', () => {
       .use(includeMarkdown)
       .process(loadFixture('non-markdown'), (err, file) => {
         if (err) throw new Error(err)
+        console.log('------------- result -------------')
+        console.log(file.contents)
+        console.log('------------- expected -------------')
+        loadFixture('non-markdown.expected').contents
         expect(file.contents).toBe(
           loadFixture('non-markdown.expected').contents
         )
