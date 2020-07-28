@@ -10,7 +10,7 @@ describe('include-markdown', () => {
       .use(includeMarkdown)
       .process(loadFixture('basic'), (err, file) => {
         if (err) throw new Error(err)
-        expect(file.contents).toBe(loadFixture('basic.expected').contents)
+        expect(file.contents).toEqual(loadFixture('basic.expected').contents)
       })
   })
 
@@ -19,7 +19,9 @@ describe('include-markdown', () => {
       .use(includeMarkdown)
       .process(loadFixture('mdx-format'), (err, file) => {
         if (err) throw new Error(err)
-        expect(file.contents).toBe(loadFixture('mdx-format.expected').contents)
+        expect(file.contents).toEqual(
+          loadFixture('mdx-format.expected').contents
+        )
       })
   })
 
@@ -28,11 +30,7 @@ describe('include-markdown', () => {
       .use(includeMarkdown)
       .process(loadFixture('non-markdown'), (err, file) => {
         if (err) throw new Error(err)
-        console.log('------------- result -------------')
-        console.log(file.contents)
-        console.log('------------- expected -------------')
-        console.log(loadFixture('non-markdown.expected').contents)
-        expect(file.contents).toBe(
+        expect(file.contents).toEqual(
           loadFixture('non-markdown.expected').contents
         )
       })
@@ -57,7 +55,7 @@ describe('include-markdown', () => {
       })
       .process(loadFixture('resolve-from'), (err, file) => {
         if (err) throw new Error(err)
-        expect(file.contents).toBe(
+        expect(file.contents).toEqual(
           loadFixture('resolve-from.expected').contents
         )
       })
