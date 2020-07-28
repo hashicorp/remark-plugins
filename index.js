@@ -12,11 +12,8 @@ module.exports = {
 }
 
 // for easy use of everything at the same time
-module.exports.allPlugins = ({
-  anchorLinks: anchorLinksOptions,
-  includeMarkdown: includeMarkdownOptions,
-} = {}) => [
-  [includeMarkdown, includeMarkdownOptions],
+module.exports.allPlugins = ({ anchorLinks: anchorLinksOptions } = {}) => [
+  includeMarkdown,
   [anchorLinks, anchorLinksOptions],
   paragraphCustomAlerts,
   typography,
