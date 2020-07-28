@@ -31,7 +31,7 @@ describe('include-markdown', () => {
         console.log('------------- result -------------')
         console.log(file.contents)
         console.log('------------- expected -------------')
-        loadFixture('non-markdown.expected')
+        console.log(loadFixture('non-markdown.expected').contents)
         expect(file.contents).toBe(
           loadFixture('non-markdown.expected').contents
         )
