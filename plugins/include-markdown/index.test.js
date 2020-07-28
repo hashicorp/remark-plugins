@@ -31,7 +31,7 @@ describe('include-markdown', () => {
         console.log('------------- result -------------')
         console.log(file.contents)
         console.log('------------- expected -------------')
-        loadFixture('non-markdown.expected').contents
+        loadFixture('non-markdown.expected')
         expect(file.contents).toBe(
           loadFixture('non-markdown.expected').contents
         )
@@ -42,7 +42,7 @@ describe('include-markdown', () => {
     expect(() =>
       remark()
         .use(includeMarkdown)
-        .process(loadFixture('invalid-path'), (err, file) => {
+        .process(loadFixture('invalid-path'), (err) => {
           if (err) throw err
         })
     ).toThrow(
