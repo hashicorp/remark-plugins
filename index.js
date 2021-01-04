@@ -15,8 +15,9 @@ module.exports = {
 module.exports.allPlugins = ({
   anchorLinks: anchorLinksOptions,
   typography: typographyOptions,
+  includeMarkdown: includeMarkdownOptions,
 } = {}) => [
-  includeMarkdown,
+  [includeMarkdown, includeMarkdownOptions],
   [anchorLinks, anchorLinksOptions],
   paragraphCustomAlerts,
   [typography, typographyOptions],
