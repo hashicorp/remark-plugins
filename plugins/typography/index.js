@@ -1,46 +1,43 @@
 const visit = require('unist-util-visit')
 
-module.exports = function typographyPlugin() {
+module.exports = function typographyPlugin(options = {}) {
+  function getClassName(elemKey) {
+    const defaultMap = {
+      h1: 'g-type-display-2',
+      h2: 'g-type-display-3',
+      h3: 'g-type-display-4',
+      h4: 'g-type-display-5',
+      h5: 'g-type-display-6',
+      h6: 'g-type-label',
+      p: 'g-type-long-body',
+      li: 'g-type-long-body',
+    }
+    const customMap = options.map || {}
+    return customMap[elemKey] || defaultMap[elemKey]
+  }
+
+  function addClassName(node, className) {
+    if (!className) return true
+    const data = node.data || (node.data = {})
+    const props = data.hProperties || (data.hProperties = {})
+    data.id = className
+    props.className = className
+  }
+
   return function transformer(tree) {
     // Add typography classes to headings
-    visit(tree, 'heading', node => {
-      const data = node.data || (node.data = {})
-      const props = data.hProperties || (data.hProperties = {})
+    visit(tree, 'heading', (node) => {
+      addClassName(node, getClassName(`h${node.depth}`))
+    })
 
-      if (node.depth === 1) {
-        data.id = 'g-type-display-2'
-        props.className = 'g-type-display-2'
-      }
-      if (node.depth === 2) {
-        data.id = 'g-type-display-3'
-        props.className = 'g-type-display-3'
-      }
-      if (node.depth === 3) {
-        data.id = 'g-type-display-4'
-        props.className = 'g-type-display-4'
-      }
-      if (node.depth === 4) {
-        data.id = 'g-type-display-5'
-        props.className = 'g-type-display-5'
-      }
-      if (node.depth === 5) {
-        data.id = 'g-type-display-6'
-        props.className = 'g-type-display-6'
-      }
-      if (node.depth === 6) {
-        data.id = 'g-type-label'
-        props.className = 'g-type-label'
-      }
+    // Add typography classes to paragraph text
+    visit(tree, 'paragraph', (node) => {
+      addClassName(node, getClassName('p'))
     })
 
     // Add typography classes to list items
-    visit(tree, 'list', node => {
-      node.children.map(li => {
-        const data = li.data || (li.data = {})
-        const props = data.hProperties || (data.hProperties = {})
-        data.id = 'g-type-long-body'
-        props.className = 'g-type-long-body'
-      })
+    visit(tree, 'listItem', (node) => {
+      addClassName(node, getClassName('li'))
     })
   }
 }
