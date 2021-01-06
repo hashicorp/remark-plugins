@@ -6,6 +6,10 @@ const stringify = require('remark-stringify')
 
 // This plugin adds anchor links to headlines and lists that begin with inline
 // code blocks.
+//
+// NOTE: Some of the HTML code is duplicated in:
+//       https://github.com/hashicorp/consul/blob/517cfa79184dc2e43bd61007d4d76946f08591d3/website/components/config-entry-reference/index.jsx#L118-L136
+//       If updating the HTML code here, also update there.
 module.exports = function anchorLinksPlugin({
   compatibilitySlug,
   listWithInlineCodePrefix,
