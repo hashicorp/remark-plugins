@@ -8,7 +8,7 @@ const stringify = require('remark-stringify')
 // code blocks.
 //
 // NOTE: Some of the HTML code is duplicated in:
-//       https://github.com/hashicorp/consul/blob/517cfa79184dc2e43bd61007d4d76946f08591d3/website/components/config-entry-reference/index.jsx#L118-L136
+//       https://github.com/hashicorp/consul/blob/4f15f83dc64e2a9a95cb6b989719838b1f97015b/website/components/config-entry-reference/index.jsx#L84-L105
 //       If updating the HTML code here, also update there.
 module.exports = function anchorLinksPlugin({
   compatibilitySlug,
