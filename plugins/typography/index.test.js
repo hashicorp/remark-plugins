@@ -56,7 +56,6 @@ describe('type-styles', () => {
     const output = mdx.sync(fileContents, {
       remarkPlugins: [[typographyPlugin, options]],
     })
-    console.log(output)
     expect(output).not.toMatch(
       /<p {\.\.\.{\n\s+"className": "g-type-long-body"\n\s+}}>{`sadklfjhlskdjf`}<\/p>/
     )
