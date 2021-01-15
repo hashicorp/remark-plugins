@@ -13,7 +13,9 @@ module.exports = function typographyPlugin(options = {}) {
       li: 'g-type-long-body',
     }
     const customMap = options.map || {}
-    return customMap[elemKey] || defaultMap[elemKey]
+    return typeof customMap[elemKey] === 'string'
+      ? customMap[elemKey]
+      : defaultMap[elemKey]
   }
 
   function addClassName(node, className) {

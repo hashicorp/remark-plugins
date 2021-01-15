@@ -47,6 +47,20 @@ describe('type-styles', () => {
     )
   })
 
+  it('allows empty strings in map to prevent the addition of classNames', () => {
+    const options = {
+      map: {
+        p: '',
+      },
+    }
+    const output = mdx.sync(fileContents, {
+      remarkPlugins: [[typographyPlugin, options]],
+    })
+    expect(output).not.toMatch(
+      /<p {\.\.\.{\n\s+"className": "g-type-long-body"\n\s+}}>{`sadklfjhlskdjf`}<\/p>/
+    )
+  })
+
   it('allows customization of classNames', () => {
     const options = {
       map: {
