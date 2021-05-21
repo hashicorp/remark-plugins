@@ -1,9 +1,13 @@
 const path = require('path')
 const remark = require('remark')
+const remarkMdx = require('remark-mdx')
 const flatMap = require('unist-util-flatmap')
 const { readSync } = require('to-vfile')
 
-module.exports = function includeMarkdownPlugin({ resolveFrom } = {}) {
+module.exports = function includeMarkdownPlugin({
+  resolveFrom,
+  mdxPartials,
+} = {}) {
   return function transformer(tree, file) {
     return flatMap(tree, (node) => {
       if (node.type !== 'paragraph') return [node]
@@ -32,8 +36,17 @@ module.exports = function includeMarkdownPlugin({ resolveFrom } = {}) {
       // if any other file type, they are embedded into a code block
       if (includePath.match(/\.md(?:x)?$/)) {
         // return the file contents in place of the @include
-        // this takes a couple steps because we allow recursive includes
-        const processor = remark().use(includeMarkdownPlugin, { resolveFrom })
+        // this takes a couple steps because we process the file contents
+        // using remark
+        const processor = remark()
+        // if the include is MDX, and the plugin consumer has confirmed their
+        // intent to stringify MDX nodes (eg "jsx"), then use remarkMdx to support
+        // custom components (which would otherwise appear as likely invalid HTML nodes)
+        const isMdx = includePath.match(/\.mdx$/)
+        if (isMdx && mdxPartials) processor.use(remarkMdx)
+        // use the includeMarkdown plugin to allow recursive includes
+        processor.use(includeMarkdownPlugin, { resolveFrom })
+        // Process the file contents, then return them
         const ast = processor.parse(includeContents)
         return processor.runSync(ast, includeContents).children
       } else {

@@ -25,6 +25,23 @@ describe('include-markdown', () => {
       })
   })
 
+  test('include custom mdx components', () => {
+    // Set up a basic snippet as an mdast tree
+    const sourceMdx = `hello\n\n@include 'include-with-component.mdx'\n\nworld`
+    const rawTree = remark().parse(sourceMdx)
+    // Set up the includes plugin which will also run remark-mdx
+    const resolveFrom = path.join(__dirname, 'fixtures')
+    const tree = includeMarkdown({ resolveFrom, mdxPartials: true })(rawTree)
+    // Expect the custom component to appear in the resulting tree as JSX
+    expect(tree.children.length).toBe(4)
+    const [beforeP, includedText, includedComponent, afterP] = tree.children
+    expect(beforeP.children[0].value).toBe('hello')
+    expect(includedText.children[0].value).toBe('some text in an include')
+    expect(includedComponent.type).toBe('jsx')
+    expect(includedComponent.value).toBe('<CustomComponent />')
+    expect(afterP.children[0].value).toBe('world')
+  })
+
   test('include non-markdown', () => {
     remark()
       .use(includeMarkdown)
