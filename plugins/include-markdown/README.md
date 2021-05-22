@@ -87,7 +87,7 @@ With this config, you'd be able to put all your includes in a partials folder an
 
 #### `resolveFrom`
 
-If you pass a truthy value for this option, `.mdx` partials will be processed using [`remark-mdx`](https://github.com/mdx-js/mdx/tree/main/packages/remark-mdx). This allows the use of custom components within partials. For example, with `next-mdx-remote`:
+If you pass `true` for this option, `.mdx` partials will be processed using [`remark-mdx`](https://github.com/mdx-js/mdx/tree/main/packages/remark-mdx). This allows the use of custom components within partials. For example, with `next-mdx-remote`:
 
 ```js
 import { serialize } from 'next-mdx-remote/serialize'
