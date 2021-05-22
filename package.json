@@ -8,9 +8,10 @@
     "Kevin Pruett"
   ],
   "dependencies": {
+    "@mdx-js/util": "1.6.22",
     "github-slugger": "^1.3.0",
-    "remark": "^12.0.1",
-    "remark-mdx": "^1.6.22",
+    "remark": "12.0.1",
+    "remark-mdx": "1.6.22",
     "to-vfile": "^6.1.0",
     "unist-util-flatmap": "^1.0.0",
     "unist-util-is": "^4.0.2",

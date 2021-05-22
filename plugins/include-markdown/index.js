@@ -3,6 +3,7 @@ const remark = require('remark')
 const remarkMdx = require('remark-mdx')
 const flatMap = require('unist-util-flatmap')
 const { readSync } = require('to-vfile')
+const mdAstToMdxAst = require('./md-ast-to-mdx-ast')
 
 module.exports = function includeMarkdownPlugin({
   resolveFrom,
@@ -42,7 +43,7 @@ module.exports = function includeMarkdownPlugin({
         // ability to stringify MDX nodes (eg "jsx"), then use remarkMdx to support
         // custom components (which would otherwise appear as likely invalid HTML nodes)
         const isMdx = includePath.match(/\.mdx$/)
-        if (isMdx && resolveMdx) processor.use(remarkMdx)
+        if (isMdx && resolveMdx) processor.use(remarkMdx).use(mdAstToMdxAst)
         // use the includeMarkdown plugin to allow recursive includes
         processor.use(includeMarkdownPlugin, { resolveFrom })
         // Process the file contents, then return them
