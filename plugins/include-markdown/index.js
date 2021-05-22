@@ -6,7 +6,7 @@ const { readSync } = require('to-vfile')
 
 module.exports = function includeMarkdownPlugin({
   resolveFrom,
-  mdxPartials,
+  resolveMdx,
 } = {}) {
   return function transformer(tree, file) {
     return flatMap(tree, (node) => {
@@ -42,7 +42,7 @@ module.exports = function includeMarkdownPlugin({
         // ability to stringify MDX nodes (eg "jsx"), then use remarkMdx to support
         // custom components (which would otherwise appear as likely invalid HTML nodes)
         const isMdx = includePath.match(/\.mdx$/)
-        if (isMdx && mdxPartials) processor.use(remarkMdx)
+        if (isMdx && resolveMdx) processor.use(remarkMdx)
         // use the includeMarkdown plugin to allow recursive includes
         processor.use(includeMarkdownPlugin, { resolveFrom })
         // Process the file contents, then return them

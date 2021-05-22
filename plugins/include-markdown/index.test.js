@@ -31,7 +31,7 @@ describe('include-markdown', () => {
     const rawTree = remark().parse(sourceMdx)
     // Set up the includes plugin which will also run remark-mdx
     const resolveFrom = path.join(__dirname, 'fixtures')
-    const tree = includeMarkdown({ resolveFrom, mdxPartials: true })(rawTree)
+    const tree = includeMarkdown({ resolveFrom, resolveMdx: true })(rawTree)
     // Expect the custom component to appear in the resulting tree as JSX
     expect(tree.children.length).toBe(4)
     const [beforeP, includedText, includedComponent, afterP] = tree.children
