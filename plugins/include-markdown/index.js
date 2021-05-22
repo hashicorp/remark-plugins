@@ -36,11 +36,10 @@ module.exports = function includeMarkdownPlugin({
       // if any other file type, they are embedded into a code block
       if (includePath.match(/\.md(?:x)?$/)) {
         // return the file contents in place of the @include
-        // this takes a couple steps because we process the file contents
-        // using remark
+        // (takes a couple steps because we're processing includes with remark)
         const processor = remark()
         // if the include is MDX, and the plugin consumer has confirmed their
-        // intent to stringify MDX nodes (eg "jsx"), then use remarkMdx to support
+        // ability to stringify MDX nodes (eg "jsx"), then use remarkMdx to support
         // custom components (which would otherwise appear as likely invalid HTML nodes)
         const isMdx = includePath.match(/\.mdx$/)
         if (isMdx && mdxPartials) processor.use(remarkMdx)
