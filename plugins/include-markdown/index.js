@@ -45,7 +45,7 @@ module.exports = function includeMarkdownPlugin({
         const isMdx = includePath.match(/\.mdx$/)
         if (isMdx && resolveMdx) processor.use(remarkMdx).use(mdAstToMdxAst)
         // use the includeMarkdown plugin to allow recursive includes
-        processor.use(includeMarkdownPlugin, { resolveFrom })
+        processor.use(includeMarkdownPlugin, { resolveFrom, resolveMdx })
         // Process the file contents, then return them
         const ast = processor.parse(includeContents)
         return processor.runSync(ast, includeContents).children

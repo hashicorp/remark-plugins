@@ -42,6 +42,25 @@ describe('include-markdown', () => {
     expect(afterP.children[0].value).toBe('world')
   })
 
+  test('include nested custom mdx components', () => {
+    // Set up a basic snippet as an mdast tree
+    const sourceMdx = `hello\n\n@include 'include-nested-component.mdx'\n\nworld`
+    const rawTree = remark().parse(sourceMdx)
+    // Set up the includes plugin which will also run remark-mdx
+    const resolveFrom = path.join(__dirname, 'fixtures')
+    const tree = includeMarkdown({ resolveFrom, resolveMdx: true })(rawTree)
+    // Expect the custom component to appear in the resulting tree as JSX
+    expect(tree.children.length).toBe(5)
+    const [beforeP, includedText, nestedText, nestedComponent, afterP] =
+      tree.children
+    expect(beforeP.children[0].value).toBe('hello')
+    expect(includedText.children[0].value).toBe('text at depth one')
+    expect(nestedText.children[0].value).toBe('some text in a nested include')
+    expect(nestedComponent.value).toBe('<NestedComponent />')
+    expect(nestedComponent.type).toBe('jsx')
+    expect(afterP.children[0].value).toBe('world')
+  })
+
   test('handles HTML comments when MDX is enabled', () => {
     // Set up a basic snippet as an mdast tree
     const sourceMdx = `<!-- HTML comment -->\n\n@include 'include-with-comment.mdx'\n\nworld`
