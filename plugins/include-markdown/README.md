@@ -92,6 +92,7 @@ If you pass a truthy value for this option, `.mdx` partials will be processed us
 ```js
 import { serialize } from 'next-mdx-remote/serialize'
 import { MDXRemote } from 'next-mdx-remote'
+import { includeMarkdown } from '@hashicorp/remark-plugins'
 import CustomComponent from '../components/custom-component'
 
 const components = { CustomComponent }
