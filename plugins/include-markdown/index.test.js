@@ -32,13 +32,22 @@ describe('include-markdown', () => {
     // Set up the includes plugin which will also run remark-mdx
     const resolveFrom = path.join(__dirname, 'fixtures')
     const tree = includeMarkdown({ resolveFrom, resolveMdx: true })(rawTree)
-    // Expect the custom component to appear in the resulting tree as JSX
-    expect(tree.children.length).toBe(4)
-    const [beforeP, includedText, includedComponent, afterP] = tree.children
+    // Assert that the resulting tree has the structure we expect
+    expect(tree.children.length).toBe(5)
+    const [beforeP, includeP, includeNewline, includeComponent, afterP] =
+      tree.children
+    // Before and after paragraphs will be "plain" markdown ASTs
     expect(beforeP.children[0].value).toBe('hello')
-    expect(includedText.children[0].value).toBe('some text in an include')
-    expect(includedComponent.type).toBe('jsx')
-    expect(includedComponent.value).toBe('<CustomComponent />')
+    // included nodes will have been processed into MDX ASTs
+    expect(includeP.type).toBe('element')
+    expect(includeP.tagName).toBe('p')
+    expect(includeP.children[0].value).toBe('some text in an include')
+    expect(includeNewline.type).toBe('text')
+    expect(includeNewline.value).toBe('\n')
+    // Expect the custom component to appear in the resulting tree as JSX
+    expect(includeComponent.type).toBe('jsx')
+    expect(includeComponent.value).toBe('<CustomComponent />')
+    // Before and after paragraphs will be "plain" markdown ASTs
     expect(afterP.children[0].value).toBe('world')
   })
 
@@ -50,21 +59,20 @@ describe('include-markdown', () => {
     const resolveFrom = path.join(__dirname, 'fixtures')
     const tree = includeMarkdown({ resolveFrom, resolveMdx: true })(rawTree)
     // Expect the tree to have the right number of nodes
-    expect(tree.children.length).toBe(7)
+    expect(tree.children.length).toBe(11)
     // Expect the direct comment to be an HTML node,
-    // as we're not using md-ast-to-mdx-ast at this top level
-    // (though in our usual MDX contexts, we would be)
+    // as we've only processed it with remark().
     const directComment = tree.children[0]
     expect(directComment.type).toBe('html')
     expect(directComment.value).toBe('<!-- HTML comment -->')
     // Expect the custom component in the include to be a JSX node
-    const customComponent = tree.children[2]
+    const customComponent = tree.children[3]
     expect(customComponent.type).toBe('jsx')
     expect(customComponent.value).toBe('<PluginTierLabel tier="official" />')
     // Expect the comment in the include to be a comment node,
     // as it has been parsed with remark-mdx and md-ast-to-mdx-ast,
     // the latter of which transforms comments from "html" to "comment" nodes
-    const includedComment = tree.children[4]
+    const includedComment = tree.children[7]
     expect(includedComment.type).toBe('comment')
     expect(includedComment.value).toBe(' HTML comment but nested ')
   })
