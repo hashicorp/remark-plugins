@@ -1,8 +1,9 @@
 const path = require('path')
 const remark = require('remark')
+const remarkMdx = require('remark-mdx')
 const flatMap = require('unist-util-flatmap')
 const { readSync } = require('to-vfile')
-const { createMdxAstCompiler } = require('@mdx-js/mdx')
+const mdAstToMdxAst = require('./md-ast-to-mdx-ast')
 
 module.exports = function includeMarkdownPlugin({
   resolveFrom,
@@ -36,17 +37,15 @@ module.exports = function includeMarkdownPlugin({
       // if any other file type, they are embedded into a code block
       if (includePath.match(/\.md(?:x)?$/)) {
         // return the file contents in place of the @include
-        // (takes a couple steps because we're processing includes)
+        // (takes a couple steps because we're processing includes with remark)
+        const processor = remark()
         // if the include is MDX, and the plugin consumer has confirmed their
-        // ability to stringify MDX nodes (eg "jsx"), then use createMdxAstCompiler
-        // rather than plain remark(). This allows us to support custom components
-        // (which would otherwise appear as likely invalid HTML nodes)
-        const useMdx = includePath.match(/\.mdx$/) && resolveMdx
-        const processor = useMdx
-          ? createMdxAstCompiler({
-              remarkPlugins: [[includeMarkdownPlugin, { resolveFrom }]],
-            })
-          : remark().use(includeMarkdownPlugin, { resolveFrom })
+        // ability to stringify MDX nodes (eg "jsx"), then use remarkMdx to support
+        // custom components (which would otherwise appear as likely invalid HTML nodes)
+        const isMdx = includePath.match(/\.mdx$/)
+        if (isMdx && resolveMdx) processor.use(remarkMdx).use(mdAstToMdxAst)
+        // use the includeMarkdown plugin to allow recursive includes
+        processor.use(includeMarkdownPlugin, { resolveFrom })
         // Process the file contents, then return them
         const ast = processor.parse(includeContents)
         return processor.runSync(ast, includeContents).children
