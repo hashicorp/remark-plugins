@@ -73,13 +73,58 @@ function sayHello(name) {
 
 ### Options
 
-This plugin accepts one optional config option: `resolveFrom`. If you pass this option along with a path, all partials will resolve from the path that was passed in. For example:
+This plugin accepts two optional config options: `resolveFrom` and `resolveMdx`.
+
+#### `resolveFrom`
+
+If you pass this option along with a path, all partials will resolve from the path that was passed in. For example:
 
 ```js
 remark().use(includeMarkdown, { resolveFrom: path.join(__dirname, 'partials') })
 ```
 
 With this config, you'd be able to put all your includes in a partials folder and require only based on the filename regardless of the location of your markdown file.
+
+#### `resolveMdx`
+
+If you pass `true` for this option, `.mdx` partials will be processed using [`remark-mdx`](https://github.com/mdx-js/mdx/tree/main/packages/remark-mdx). This allows the use of custom components within partials. For example, with `next-mdx-remote`:
+
+```js
+import { serialize } from 'next-mdx-remote/serialize'
+import { MDXRemote } from 'next-mdx-remote'
+import { includeMarkdown } from '@hashicorp/remark-plugins'
+import CustomComponent from '../components/custom-component'
+
+const components = { CustomComponent }
+
+export default function TestPage({ source }) {
+  return (
+    <div className="wrapper">
+      <MDXRemote {...source} components={components} />
+    </div>
+  )
+}
+
+export async function getStaticProps() {
+  // Imagine "included-file.mdx" has <CustomComponent /> in it...
+  // it will render as expected, since the @include extension
+  // is .mdx and resolveMdx is true.
+  const source = 'Some **mdx** text.\n\n@include "included-file.mdx"'
+  const mdxSource = await serialize(source, {
+    mdxOptions: {
+      remarkPlugins: [[includeMarkdown, { resolveMdx: true }]],
+    },
+  })
+  return { props: { source: mdxSource } }
+}
+```
+
+**Note**: this option should only be used in MDX contexts. This option will likely break where `remark-stringify` is used as the stringify plugin, such as when using `remark` directly.
+
+```js
+// 🚨 DON'T DO THIS - it will likely just break.
+// remark().use(includeMarkdown, { resolveMdx: true })
+```
 
 ### Ordering
 
@@ -95,4 +140,4 @@ If you order them the opposite way, like this:
 remark().use(capitalizeAllText).use(includeMarkdown)
 ```
 
-...what will happen is that all your text will be capitalized _except_ for the text in includeed files. And on top of that, the include plugin wouldn't resolve the files properly, because it capitalized the word "include", which is the wrong syntax. So usually you want to make sure this plugin comes first in your plugin stack.
+...what will happen is that all your text will be capitalized _except_ for the text in included files. And on top of that, the include plugin wouldn't resolve the files properly, because it capitalized the word "include", which is the wrong syntax. So usually you want to make sure this plugin comes first in your plugin stack.
