@@ -85,7 +85,7 @@ remark().use(includeMarkdown, { resolveFrom: path.join(__dirname, 'partials') })
 
 With this config, you'd be able to put all your includes in a partials folder and require only based on the filename regardless of the location of your markdown file.
 
-#### `resolveFrom`
+#### `resolveMdx`
 
 If you pass `true` for this option, `.mdx` partials will be processed using [`remark-mdx`](https://github.com/mdx-js/mdx/tree/main/packages/remark-mdx). This allows the use of custom components within partials. For example, with `next-mdx-remote`:
 
