@@ -23,14 +23,14 @@ Content here...
     aria-label="first level heading permalink"
     >»</a
   >
-  <a id="first-level-heading" class="__target-h" aria-hidden></a>
+  <a id="first-level-heading" class="__target-h" aria-hidden="true"></a>
   First Level Heading
 </h1>
 
 <ul>
   <li>list item</li>
   <li>
-    <a id="#code_block" class="__target-lic" aria-hidden></a>
+    <a id="#code_block" class="__target-lic" aria-hidden="true"></a>
     <a
       href="#code_block"
       class="__permalink-lic"

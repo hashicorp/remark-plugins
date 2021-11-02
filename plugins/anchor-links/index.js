@@ -55,7 +55,7 @@ function processHeading(node, compatibilitySlug, links) {
   const slug = generateSlug(text, links)
   node.children.unshift({
     type: 'html',
-    value: `<a class="__target-h" id="${slug}" aria-hidden></a>`,
+    value: `<a class="__target-h" id="${slug}" aria-hidden="true"></a>`,
   })
 
   // handle anchor link aliases
@@ -70,7 +70,7 @@ function processHeading(node, compatibilitySlug, links) {
     if (slug !== slug2) {
       node.children.unshift({
         type: 'html',
-        value: `<a class="__target-h __compat" id="${slug2}" aria-hidden></a>`,
+        value: `<a class="__target-h __compat" id="${slug2}" aria-hidden="true"></a>`,
       })
     }
   }
@@ -118,7 +118,7 @@ function processListWithInlineCode(
     if (slug !== slug2) {
       liNode.children.unshift({
         type: 'html',
-        value: `<a class="__target-h __compat" id="${slug2}" aria-hidden></a>`,
+        value: `<a class="__target-h __compat" id="${slug2}" aria-hidden="true"></a>`,
       })
     }
   }
@@ -126,7 +126,7 @@ function processListWithInlineCode(
   // add the target element with the right slug
   liNode.children.unshift({
     type: 'html',
-    value: `<a id="${slug}" class="__target-lic" aria-hidden></a>`,
+    value: `<a id="${slug}" class="__target-lic" aria-hidden="true"></a>`,
   })
 
   // - if an alias is defined, use that
@@ -251,7 +251,7 @@ function aliasesToNodes(aliases, id) {
   return aliases.map((alias) => {
     return {
       type: 'html',
-      value: `<a class="__target-${id} __compat" id="${alias}" aria-hidden></a>`,
+      value: `<a class="__target-${id} __compat" id="${alias}" aria-hidden="true"></a>`,
     }
   })
 }
