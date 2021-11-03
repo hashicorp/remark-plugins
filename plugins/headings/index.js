@@ -7,6 +7,7 @@ module.exports = function headingsPlugin({ headings }) {
       const title = node.children[0].value
       const slug = generateSlug(title)
       const level = node.depth
+
       headings.push({ level, slug, title })
     })
   }
