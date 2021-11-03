@@ -2,31 +2,55 @@ const mdx = require('@mdx-js/mdx')
 const generateSlug = require('../../generate_slug')
 const headingsPlugin = require('./index.js')
 
-const contents = `# Heading 1
+const contents = `
+# Heading 1
 ## Heading 2
+### Heading 3
+#### Heading 4
+##### Heading 5
+###### Heading 6
 `
 
-const startTestString =
-  '/* start of @hashicorp/remark-plugins/headings-plugin comment'
-const endTestString =
-  'end of @hashicorp/remark-plugins/headings-plugin comment */'
-
 describe('headings plugin', () => {
-  it('includes a comment with the correct heading data', () => {
-    mdx(contents, { remarkPlugins: [headingsPlugin] }).then((stuff) => {
-      const indexOfCommentStart = stuff.indexOf(startTestString)
-      const indexOfCommentEnd = stuff.indexOf(endTestString)
-      const commentContent = stuff.substring(
-        indexOfCommentStart + startTestString.length,
-        indexOfCommentEnd
-      )
-      const headingData = JSON.parse(commentContent)
-
-      expect(headingData).toHaveLength(2)
-      expect(headingData[0].title).toBe('Heading 1')
-      expect(headingData[0].slug).toBe(generateSlug('Heading 1'))
-      expect(headingData[1].title).toBe('Heading 2')
-      expect(headingData[1].slug).toBe(generateSlug('Heading 2'))
+  it('includes a comment with the correct heading data', async () => {
+    const headings = []
+    await mdx(contents, {
+      remarkPlugins: [[headingsPlugin, { headings }]],
     })
+
+    expect(headings).toMatchInlineSnapshot(`
+    Array [
+      Object {
+        "level": 1,
+        "slug": "${generateSlug('Heading 1')}",
+        "title": "Heading 1",
+      },
+      Object {
+        "level": 2,
+        "slug": "${generateSlug('Heading 2')}",
+        "title": "Heading 2",
+      },
+      Object {
+        "level": 3,
+        "slug": "${generateSlug('Heading 3')}",
+        "title": "Heading 3",
+      },
+      Object {
+        "level": 4,
+        "slug": "${generateSlug('Heading 4')}",
+        "title": "Heading 4",
+      },
+      Object {
+        "level": 5,
+        "slug": "${generateSlug('Heading 5')}",
+        "title": "Heading 5",
+      },
+      Object {
+        "level": 6,
+        "slug": "${generateSlug('Heading 6')}",
+        "title": "Heading 6",
+      },
+    ]
+    `)
   })
 })
