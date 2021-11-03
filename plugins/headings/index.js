@@ -6,21 +6,19 @@ const COMMENT_PREFIX =
 const COMMENT_SUFFIX =
   'end of @hashicorp/remark-plugins/headings-plugin comment'
 
-module.exports = function headingsPlugin() {
+module.exports = function headingsPlugin({ headings }) {
   return function transformer(tree) {
-    const headings = []
-
     visit(tree, 'heading', (node) => {
       const title = node.children[0].value
       const slug = generateSlug(title)
-      headings.push({ title, slug })
+      headings.push({ title, slug, level: node.depth })
     })
 
-    tree.children.push({
-      type: 'comment',
-      value: ` ${COMMENT_PREFIX}\n${JSON.stringify(
-        headings
-      )}\n${COMMENT_SUFFIX} `,
-    })
+    // tree.children.push({
+    //   type: 'comment',
+    //   value: ` ${COMMENT_PREFIX}\n${JSON.stringify(
+    //     headings
+    //   )}\n${COMMENT_SUFFIX} `,
+    // })
   }
 }
