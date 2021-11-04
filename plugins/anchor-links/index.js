@@ -25,13 +25,7 @@ module.exports = function anchorLinksPlugin({
       //
       // start with headings
       if (is(node, 'heading')) {
-        const [processedNode, headingData] = processHeading(
-          node,
-          compatibilitySlug,
-          links
-        )
-        headings?.push(headingData)
-        return processedNode
+        return processHeading(node, compatibilitySlug, links, headings)
       }
 
       // next we check for lists with inline code. specifically, we're looking for:
@@ -55,7 +49,7 @@ module.exports = function anchorLinksPlugin({
   }
 }
 
-function processHeading(node, compatibilitySlug, links) {
+function processHeading(node, compatibilitySlug, links, headings) {
   const text = stringifyChildNodes(node)
   const level = node.depth
   const title = text
@@ -110,7 +104,9 @@ function processHeading(node, compatibilitySlug, links) {
     slug,
     title,
   }
-  return [node, headingData]
+  headings?.push(headingData)
+
+  return node
 }
 
 function processListWithInlineCode(
