@@ -2,7 +2,7 @@
 
 This plugin processes headings and inline code blocks at the beginning of a list item to generate a slug and adds a **permalink** element and an invisible **target** element. These two elements ensure that users are able to click a link next to the heading, or click on the inline code block to quickly get an anchor link directly to the corresponding section, and that developers are able to customize the position that the section appears when that anchor link is visited, respectively.
 
-### Input:
+## Input:
 
 ```mdx
 # First Level Heading
@@ -13,7 +13,7 @@ This plugin processes headings and inline code blocks at the beginning of a list
 Content here...
 ```
 
-### Output:
+## Output:
 
 ```html
 <h1>
