@@ -54,6 +54,7 @@ function processHeading(node, compatibilitySlug, links, headings) {
   const level = node.depth
   const title = text
     .substring(level + 1)
+    .replace(/<\/?[^>]*>/g, '') // Strip html
     .replace(/\(\(#.*?\)\)/g, '') // Strip anchor link aliases
     .replace(/\s+/g, ' ') // Collapse whitespace
     .trim()

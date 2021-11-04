@@ -85,6 +85,6 @@ This feature is intended to be used **very sparingly**. It is a nonstandard mark
   - `level`: the level of a heading (e.g. an `<h1>` has a level of 1 and an `<h2>` has a level of 2)
   - `permalinkSlug`: the slug used in the permalink element
   - `slug`: the slug generated from a heading's text
-  - `title`: the content of a heading excluding the anchor link aliases
+  - `title`: the content of a heading in plain text (excluding aliases)
 
 - `listWithInlineCodePrefix` _(string, optional)_ - if present, will append a string to the beginning of each instance where lists with inline code at the beginning get an anchor link. This is also provided for compatibility reasons, as we previously used a separate plugin for lists with inline code that appended an `inlinecode` prefix to avoid conflicts.

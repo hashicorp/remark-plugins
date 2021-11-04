@@ -166,7 +166,7 @@ describe('anchor-links', () => {
         execute(
           [
             '# hello world <a href="wow"></a>',
-            '# hello <a href="wow"></a> world',
+            '# hello <a href="wow">world</a>',
           ],
           { headings }
         )
@@ -179,7 +179,7 @@ describe('anchor-links', () => {
           }),
           expectedHeadingResult({
             slug: 'hello-world-1',
-            text: 'hello <a href="wow"></a> world',
+            text: 'hello <a href="wow">world</a>',
             aria: 'hello world',
           }),
         ].join('\n')
@@ -191,14 +191,14 @@ describe('anchor-links', () => {
           "level": 1,
           "permalinkSlug": "hello-world",
           "slug": "hello-world",
-          "title": "hello world <a href=\\"wow\\"></a>",
+          "title": "hello world",
         },
         Object {
           "aliases": undefined,
           "level": 1,
           "permalinkSlug": "hello-world-1",
           "slug": "hello-world-1",
-          "title": "hello <a href=\\"wow\\"></a> world",
+          "title": "hello world",
         },
       ]
       `)
@@ -236,7 +236,7 @@ describe('anchor-links', () => {
           "level": 1,
           "permalinkSlug": "hello-world-1",
           "slug": "hello-world-1",
-          "title": "<a></a> hello world",
+          "title": "hello world",
         },
       ]
       `)
