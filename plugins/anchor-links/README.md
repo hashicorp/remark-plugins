@@ -79,4 +79,12 @@ This feature is intended to be used **very sparingly**. It is a nonstandard mark
 
   > **NOTE:** Be conscious of duplicate tracking with your compatibility function. If it needs to keep track of existing slugs on the page to avoid duplicates, it must implement that functionality on its own. Default slugs are not exposed to the `compatibilitySlug` function because this offers a footgun that can easily break compatibility. The `compatibilitySlug` function should operate entirely in its own sphere -- if it happens to generate a duplicate slug, the plugin itself will remove it as compatibility isn't necessary in that instance.
 
+- `headings` _(array, optional)_ - if present, data about the headings being processed will be pushed to the array. Each element is an object with the following properties:
+
+  - `aliases`: a string array containing all of the given [anchor link aliases](#anchor-link-aliases) for a heading
+  - `level`: the level of a heading (e.g. an `<h1>` has a level of 1 and an `<h2>` has a level of 2)
+  - `permalinkSlug`: the slug used in the permalink element
+  - `slug`: the slug generated from a heading's text
+  - `title`: the content of a heading excluding the anchor link aliases
+
 - `listWithInlineCodePrefix` _(string, optional)_ - if present, will append a string to the beginning of each instance where lists with inline code at the beginning get an anchor link. This is also provided for compatibility reasons, as we previously used a separate plugin for lists with inline code that appended an `inlinecode` prefix to avoid conflicts.
