@@ -89,6 +89,11 @@ describe('anchor-links', () => {
       `)
     })
 
+    test('without headings option', () => {
+      execute('# hello world')
+      expect(headings).toMatchInlineSnapshot(`Array []`)
+    })
+
     test('duplicate slugs', () => {
       const headings = []
       expect(
