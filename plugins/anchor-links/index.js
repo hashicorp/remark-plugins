@@ -104,11 +104,11 @@ function processHeading(node, compatibilitySlug, links) {
   })
 
   const headingData = {
-    title,
-    level,
-    slug,
     aliases,
+    level,
     permalinkSlug,
+    slug,
+    title,
   }
   return [node, headingData]
 }
