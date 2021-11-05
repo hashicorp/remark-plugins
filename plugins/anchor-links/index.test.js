@@ -9,7 +9,7 @@ describe('anchor-links', () => {
         [
           '<h1>',
           '<a class="__permalink-h" href="#hello-world" aria-label="hello world permalink">»</a>',
-          '<a class="__target-h" id="hello-world" aria-hidden></a>',
+          '<a class="__target-h" id="hello-world" aria-hidden="true"></a>',
           'hello world',
           '</h1>',
         ].join('')
@@ -373,11 +373,11 @@ function expectedHeadingResult({ slug, compatSlugs, aria, text, level }) {
   if (compatSlugs) {
     compatSlugs.map((compatSlug) =>
       res.push(
-        `<a class="__target-h __compat" id="${compatSlug}" aria-hidden></a>`
+        `<a class="__target-h __compat" id="${compatSlug}" aria-hidden="true"></a>`
       )
     )
   }
-  res.push(`<a class="__target-h" id="${slug}" aria-hidden></a>`)
+  res.push(`<a class="__target-h" id="${slug}" aria-hidden="true"></a>`)
   res.push(text || slug)
   res.push(`</h${level || '1'}>`)
   return res.join('')
@@ -392,11 +392,11 @@ function expectedInlineCodeResult({
 }) {
   const res = ['<li>']
 
-  res.push(`<a id="${slug}" class="__target-lic" aria-hidden></a>`)
+  res.push(`<a id="${slug}" class="__target-lic" aria-hidden="true"></a>`)
   if (compatSlugs) {
     compatSlugs.map((compatSlug) =>
       res.push(
-        `<a class="__target-lic __compat" id="${compatSlug}" aria-hidden></a>`
+        `<a class="__target-lic __compat" id="${compatSlug}" aria-hidden="true"></a>`
       )
     )
   }
