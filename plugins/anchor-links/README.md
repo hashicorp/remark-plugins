@@ -2,7 +2,7 @@
 
 This plugin processes headings and inline code blocks at the beginning of a list item to generate a slug and adds a **permalink** element and an invisible **target** element. These two elements ensure that users are able to click a link next to the heading, or click on the inline code block to quickly get an anchor link directly to the corresponding section, and that developers are able to customize the position that the section appears when that anchor link is visited, respectively.
 
-### Input:
+## Input:
 
 ```mdx
 # First Level Heading
@@ -13,7 +13,7 @@ This plugin processes headings and inline code blocks at the beginning of a list
 Content here...
 ```
 
-### Output:
+## Output:
 
 ```html
 <h1>
@@ -78,5 +78,13 @@ This feature is intended to be used **very sparingly**. It is a nonstandard mark
 - `compatibilitySlug` _(function, optional)_ - if present, will generate an slug using a custom slug creation algorithm and add it as an additional `__target` element. Accepts a function with the following signature `fn(text: string)`. The `text` argument is the headline/inline code text, if the `compatibilitySlug` function generates an idential slug as the default, it will not be added at all.
 
   > **NOTE:** Be conscious of duplicate tracking with your compatibility function. If it needs to keep track of existing slugs on the page to avoid duplicates, it must implement that functionality on its own. Default slugs are not exposed to the `compatibilitySlug` function because this offers a footgun that can easily break compatibility. The `compatibilitySlug` function should operate entirely in its own sphere -- if it happens to generate a duplicate slug, the plugin itself will remove it as compatibility isn't necessary in that instance.
+
+- `headings` _(array, optional)_ - if present, data about the headings being processed will be pushed to the array. Each element is an object with the following properties:
+
+  - `aliases`: a string array containing all of the given [anchor link aliases](#anchor-link-aliases) for a heading
+  - `level`: the level of a heading (e.g. an `<h1>` has a level of 1 and an `<h2>` has a level of 2)
+  - `permalinkSlug`: the slug used in the permalink element
+  - `slug`: the slug generated from a heading's text
+  - `title`: the content of a heading in plain text (excluding aliases)
 
 - `listWithInlineCodePrefix` _(string, optional)_ - if present, will append a string to the beginning of each instance where lists with inline code at the beginning get an anchor link. This is also provided for compatibility reasons, as we previously used a separate plugin for lists with inline code that appended an `inlinecode` prefix to avoid conflicts.

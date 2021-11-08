@@ -5,7 +5,8 @@ const anchorLinks = require('./index.js')
 describe('anchor-links', () => {
   describe('headings', () => {
     test('basic', () => {
-      expect(execute('# hello world')).toMatch(
+      const headings = []
+      expect(execute('# hello world', { headings })).toMatch(
         [
           '<h1>',
           '<a class="__permalink-h" href="#hello-world" aria-label="hello world permalink">»</a>',
@@ -14,17 +15,92 @@ describe('anchor-links', () => {
           '</h1>',
         ].join('')
       )
+      expect(headings).toMatchInlineSnapshot(`
+      Array [
+        Object {
+          "aliases": undefined,
+          "level": 1,
+          "permalinkSlug": "hello-world",
+          "slug": "hello-world",
+          "title": "hello world",
+        },
+      ]
+      `)
+    })
+
+    test('multiple heading levels', () => {
+      const headings = []
+      execute(
+        [
+          '# Heading 1',
+          '## Heading 2',
+          '### Heading 3',
+          '#### Heading 4',
+          '##### Heading 5',
+          '###### Heading 6',
+        ],
+        { headings }
+      )
+      expect(headings).toMatchInlineSnapshot(`
+      Array [
+        Object {
+          "aliases": undefined,
+          "level": 1,
+          "permalinkSlug": "heading-1",
+          "slug": "heading-1",
+          "title": "Heading 1",
+        },
+        Object {
+          "aliases": undefined,
+          "level": 2,
+          "permalinkSlug": "heading-2",
+          "slug": "heading-2",
+          "title": "Heading 2",
+        },
+        Object {
+          "aliases": undefined,
+          "level": 3,
+          "permalinkSlug": "heading-3",
+          "slug": "heading-3",
+          "title": "Heading 3",
+        },
+        Object {
+          "aliases": undefined,
+          "level": 4,
+          "permalinkSlug": "heading-4",
+          "slug": "heading-4",
+          "title": "Heading 4",
+        },
+        Object {
+          "aliases": undefined,
+          "level": 5,
+          "permalinkSlug": "heading-5",
+          "slug": "heading-5",
+          "title": "Heading 5",
+        },
+        Object {
+          "aliases": undefined,
+          "level": 6,
+          "permalinkSlug": "heading-6",
+          "slug": "heading-6",
+          "title": "Heading 6",
+        },
+      ]
+      `)
+    })
+
+    test('without headings option', () => {
+      execute('# hello world')
+      expect(headings).toMatchInlineSnapshot(`Array []`)
     })
 
     test('duplicate slugs', () => {
+      const headings = []
       expect(
-        execute([
-          '# hello world',
-          '# hello world',
-          '# foo',
-          '# hello world',
-          '# foo',
-        ])
+        execute(
+          ['# hello world', '# hello world', '# foo', '# hello world', '# foo'],
+          { headings }
+        )
       ).toMatch(
         [
           expectedHeadingResult({
@@ -43,14 +119,57 @@ describe('anchor-links', () => {
           expectedHeadingResult({ text: 'foo', slug: 'foo-1', aria: 'foo' }),
         ].join('\n')
       )
+      expect(headings).toMatchInlineSnapshot(`
+      Array [
+        Object {
+          "aliases": undefined,
+          "level": 1,
+          "permalinkSlug": "hello-world",
+          "slug": "hello-world",
+          "title": "hello world",
+        },
+        Object {
+          "aliases": undefined,
+          "level": 1,
+          "permalinkSlug": "hello-world-1",
+          "slug": "hello-world-1",
+          "title": "hello world",
+        },
+        Object {
+          "aliases": undefined,
+          "level": 1,
+          "permalinkSlug": "foo",
+          "slug": "foo",
+          "title": "foo",
+        },
+        Object {
+          "aliases": undefined,
+          "level": 1,
+          "permalinkSlug": "hello-world-2",
+          "slug": "hello-world-2",
+          "title": "hello world",
+        },
+        Object {
+          "aliases": undefined,
+          "level": 1,
+          "permalinkSlug": "foo-1",
+          "slug": "foo-1",
+          "title": "foo",
+        },
+      ]
+      `)
     })
 
     test('strips html', () => {
+      const headings = []
       expect(
-        execute([
-          '# hello world <a href="wow"></a>',
-          '# hello <a href="wow"></a> world',
-        ])
+        execute(
+          [
+            '# hello world <a href="wow"></a>',
+            '# hello <a href="wow">world</a>',
+          ],
+          { headings }
+        )
       ).toMatch(
         [
           expectedHeadingResult({
@@ -60,15 +179,36 @@ describe('anchor-links', () => {
           }),
           expectedHeadingResult({
             slug: 'hello-world-1',
-            text: 'hello <a href="wow"></a> world',
+            text: 'hello <a href="wow">world</a>',
             aria: 'hello world',
           }),
         ].join('\n')
       )
+      expect(headings).toMatchInlineSnapshot(`
+      Array [
+        Object {
+          "aliases": undefined,
+          "level": 1,
+          "permalinkSlug": "hello-world",
+          "slug": "hello-world",
+          "title": "hello world",
+        },
+        Object {
+          "aliases": undefined,
+          "level": 1,
+          "permalinkSlug": "hello-world-1",
+          "slug": "hello-world-1",
+          "title": "hello world",
+        },
+      ]
+      `)
     })
 
     test('removes leading hyphens', () => {
-      expect(execute(['# - hello world', '# <a></a> hello world'])).toMatch(
+      const headings = []
+      expect(
+        execute(['# - hello world', '# <a></a> hello world'], { headings })
+      ).toMatch(
         [
           expectedHeadingResult({
             slug: 'hello-world',
@@ -82,15 +222,33 @@ describe('anchor-links', () => {
           }),
         ].join('\n')
       )
+      expect(headings).toMatchInlineSnapshot(`
+      Array [
+        Object {
+          "aliases": undefined,
+          "level": 1,
+          "permalinkSlug": "hello-world",
+          "slug": "hello-world",
+          "title": "- hello world",
+        },
+        Object {
+          "aliases": undefined,
+          "level": 1,
+          "permalinkSlug": "hello-world-1",
+          "slug": "hello-world-1",
+          "title": "hello world",
+        },
+      ]
+      `)
     })
 
     test('removes double hyphens', () => {
+      const headings = []
       expect(
-        execute([
-          '# hEllO----world',
-          '# hello :&-- world',
-          '# hello world (foo)()',
-        ])
+        execute(
+          ['# hEllO----world', '# hello :&-- world', '# hello world (foo)()'],
+          { headings }
+        )
       ).toMatch(
         [
           expectedHeadingResult({
@@ -110,11 +268,37 @@ describe('anchor-links', () => {
           }),
         ].join('\n')
       )
+      expect(headings).toMatchInlineSnapshot(`
+      Array [
+        Object {
+          "aliases": undefined,
+          "level": 1,
+          "permalinkSlug": "hello-world",
+          "slug": "hello-world",
+          "title": "hEllO----world",
+        },
+        Object {
+          "aliases": undefined,
+          "level": 1,
+          "permalinkSlug": "hello-world-1",
+          "slug": "hello-world-1",
+          "title": "hello :&-- world",
+        },
+        Object {
+          "aliases": undefined,
+          "level": 1,
+          "permalinkSlug": "hello-world-foo",
+          "slug": "hello-world-foo",
+          "title": "hello world (foo)()",
+        },
+      ]
+      `)
     })
 
     test('generates an extra slug if the compatibilitySlug argument is provided', () => {
+      const headings = []
       expect(
-        execute('# hello world', { compatibilitySlug: (_) => 'foo' })
+        execute('# hello world', { compatibilitySlug: (_) => 'foo', headings })
       ).toMatch(
         expectedHeadingResult({
           slug: 'hello-world',
@@ -122,70 +306,157 @@ describe('anchor-links', () => {
           compatSlugs: ['foo'],
         })
       )
+      expect(headings).toMatchInlineSnapshot(`
+      Array [
+        Object {
+          "aliases": undefined,
+          "level": 1,
+          "permalinkSlug": "foo",
+          "slug": "hello-world",
+          "title": "hello world",
+        },
+      ]
+      `)
     })
 
     test('does not render duplicate compatibility slugs', () => {
+      const headings = []
       expect(
-        execute('# hello world', { compatibilitySlug: (_) => 'hello-world' })
+        execute('# hello world', {
+          compatibilitySlug: (_) => 'hello-world',
+          headings,
+        })
       ).toMatch(
         expectedHeadingResult({
           slug: 'hello-world',
           text: 'hello world',
         })
       )
+      expect(headings).toMatchInlineSnapshot(`
+      Array [
+        Object {
+          "aliases": undefined,
+          "level": 1,
+          "permalinkSlug": "hello-world",
+          "slug": "hello-world",
+          "title": "hello world",
+        },
+      ]
+      `)
     })
 
     test('anchor aliases', () => {
-      expect(execute('# hello world ((#foo))')).toMatch(
+      let headings = []
+      expect(execute('# hello world ((#foo))', { headings })).toMatch(
         expectedHeadingResult({
           slug: 'hello-world',
           text: 'hello world',
           compatSlugs: ['foo'],
         })
       )
+      expect(headings).toMatchInlineSnapshot(`
+      Array [
+        Object {
+          "aliases": Array [
+            "foo",
+          ],
+          "level": 1,
+          "permalinkSlug": "foo",
+          "slug": "hello-world",
+          "title": "hello world",
+        },
+      ]
+      `)
 
-      expect(execute('# hello world ((#\\_foo))')).toMatch(
+      headings = []
+      expect(execute('# hello world ((#\\_foo))', { headings })).toMatch(
         expectedHeadingResult({
           slug: 'hello-world',
           text: 'hello world',
           compatSlugs: ['_foo'],
         })
       )
+      expect(headings).toMatchInlineSnapshot(`
+      Array [
+        Object {
+          "aliases": Array [
+            "_foo",
+          ],
+          "level": 1,
+          "permalinkSlug": "_foo",
+          "slug": "hello-world",
+          "title": "hello world",
+        },
+      ]
+      `)
 
-      expect(execute('# hello world ((#foo, #bar))')).toMatch(
+      headings = []
+      expect(execute('# hello world ((#foo, #bar))', { headings })).toMatch(
         expectedHeadingResult({
           slug: 'hello-world',
           text: 'hello world',
           compatSlugs: ['foo', 'bar'],
         })
       )
+      expect(headings).toMatchInlineSnapshot(`
+      Array [
+        Object {
+          "aliases": Array [
+            "foo",
+            "bar",
+          ],
+          "level": 1,
+          "permalinkSlug": "foo",
+          "slug": "hello-world",
+          "title": "hello world",
+        },
+      ]
+      `)
 
       // this *shouldn't* work but currently does, so it has coverage
-      expect(execute('# hello world ((#foo)) more text')).toMatch(
+      headings = []
+      expect(execute('# hello world ((#foo)) more text', { headings })).toMatch(
         expectedHeadingResult({
           slug: 'hello-world-more-text',
           text: 'hello world more text',
           compatSlugs: ['foo'],
         })
       )
+      expect(headings).toMatchInlineSnapshot(`
+      Array [
+        Object {
+          "aliases": Array [
+            "foo",
+          ],
+          "level": 1,
+          "permalinkSlug": "foo",
+          "slug": "hello-world-more-text",
+          "title": "hello world more text",
+        },
+      ]
+      `)
     })
   })
 
   describe('lists starting with inline code', () => {
     test('basic', () => {
+      const headings = []
       expect(
-        execute([
-          'some text',
-          '',
-          '- raw text',
-          '- `code with spaces`',
-          '- `code_with_text_after` - explanation of code',
-          '- text `followed_by_code` then more text',
-          '- <a>html</a> `followed_by_code` then more text',
-          '- `code_with_text_and_link` - heres [a link](#foo) and some more text',
-          '',
-          'some more text',
-        ])
+        execute(
+          [
+            'some text',
+            '',
+            '- raw text',
+            '- `code with spaces`',
+            '- `code_with_text_after` - explanation of code',
+            '- text `followed_by_code` then more text',
+            '- <a>html</a> `followed_by_code` then more text',
+            '- `code_with_text_and_link` - heres [a link](#foo) and some more text',
+            '',
+            'some more text',
+          ],
+          { headings }
+        )
       ).toMatch(
         [
           '<p>some text</p>',
@@ -209,10 +480,12 @@ describe('anchor-links', () => {
           '<p>some more text</p>',
         ].join('\n')
       )
+      expect(headings).toMatchInlineSnapshot('Array []')
     })
 
     test('duplicate slugs', () => {
-      expect(execute(['- `foo`', '- `foo`'])).toMatch(
+      const headings = []
+      expect(execute(['- `foo`', '- `foo`'], { headings })).toMatch(
         [
           '<ul>',
           expectedInlineCodeResult({ slug: 'foo' }),
@@ -220,11 +493,13 @@ describe('anchor-links', () => {
           '</ul>',
         ].join('\n')
       )
+      expect(headings).toMatchInlineSnapshot('Array []')
     })
 
     test('prefix option', () => {
+      const headings = []
       expect(
-        execute('- `foo`', { listWithInlineCodePrefix: 'inlinecode' })
+        execute('- `foo`', { headings, listWithInlineCodePrefix: 'inlinecode' })
       ).toMatch(
         [
           '<ul>',
@@ -235,11 +510,16 @@ describe('anchor-links', () => {
           '</ul>',
         ].join('\n')
       )
+      expect(headings).toMatchInlineSnapshot('Array []')
     })
 
     test('generates an extra slug if the compatibilitySlug argument is provided', () => {
+      const headings = []
       expect(
-        execute('- `hello world`', { compatibilitySlug: (_) => 'foo' })
+        execute('- `hello world`', {
+          compatibilitySlug: (_) => 'foo',
+          headings,
+        })
       ).toMatch(
         '<ul>',
         expectedInlineCodeResult({
@@ -249,11 +529,16 @@ describe('anchor-links', () => {
         }),
         '</ul>'
       )
+      expect(headings).toMatchInlineSnapshot('Array []')
     })
 
     test('does not render duplicate compatibility slugs', () => {
+      const headings = []
       expect(
-        execute('- `hello world`', { compatibilitySlug: (_) => 'hello-world' })
+        execute('- `hello world`', {
+          compatibilitySlug: (_) => 'hello-world',
+          headings,
+        })
       ).toMatch(
         '<ul>',
         expectedInlineCodeResult({
@@ -262,10 +547,12 @@ describe('anchor-links', () => {
         }),
         '</ul>'
       )
+      expect(headings).toMatchInlineSnapshot('Array []')
     })
 
     test('duplicate slug with headline', () => {
-      expect(execute(['# foo', '', '- `foo`'])).toMatch(
+      const headings = []
+      expect(execute(['# foo', '', '- `foo`'], { headings })).toMatch(
         [
           expectedHeadingResult({ slug: 'foo' }),
           '<ul>',
@@ -273,11 +560,24 @@ describe('anchor-links', () => {
           '</ul>',
         ].join('\n')
       )
+      expect(headings).toMatchInlineSnapshot(`
+      Array [
+        Object {
+          "aliases": undefined,
+          "level": 1,
+          "permalinkSlug": "foo",
+          "slug": "foo",
+          "title": "foo",
+        },
+      ]
+      `)
     })
 
     test('duplicate slug with headline and prefix option', () => {
+      const headings = []
       expect(
         execute(['# foo', '', '- `foo`'], {
+          headings,
           listWithInlineCodePrefix: 'inlinecode',
         })
       ).toMatch(
@@ -291,15 +591,30 @@ describe('anchor-links', () => {
           '</ul>',
         ].join('\n')
       )
+      expect(headings).toMatchInlineSnapshot(`
+      Array [
+        Object {
+          "aliases": undefined,
+          "level": 1,
+          "permalinkSlug": "foo",
+          "slug": "foo",
+          "title": "foo",
+        },
+      ]
+      `)
     })
 
     test('anchor aliases', () => {
+      let headings = []
       expect(
-        execute([
-          '- `foo` ((#bar)) - other text',
-          '- `foo` ((#baz, #quux))',
-          '- `foo` some text ((#wow)) more text', // this one *shouldn't* work but it does currently
-        ])
+        execute(
+          [
+            '- `foo` ((#bar)) - other text',
+            '- `foo` ((#baz, #quux))',
+            '- `foo` some text ((#wow)) more text', // this one *shouldn't* work but it does currently
+          ],
+          { headings }
+        )
       ).toMatch(
         [
           '<ul>',
@@ -322,14 +637,19 @@ describe('anchor-links', () => {
           '</ul>',
         ].join('\n')
       )
+      expect(headings).toMatchInlineSnapshot('Array []')
     })
 
+    headings = []
     expect(
-      execute([
-        '- `baz` ((#\\_bar)) text',
-        '- `quux` ((#foo wow',
-        '- `foo` ((#\\_wow)) text [link](#test) more',
-      ])
+      execute(
+        [
+          '- `baz` ((#\\_bar)) text',
+          '- `quux` ((#foo wow',
+          '- `foo` ((#\\_wow)) text [link](#test) more',
+        ],
+        { headings }
+      )
     ).toMatch(
       [
         '<ul>',
@@ -350,6 +670,7 @@ describe('anchor-links', () => {
         '</ul>',
       ].join('\n')
     )
+    expect(headings).toMatchInlineSnapshot('Array []')
   })
 })
 

@@ -13,6 +13,7 @@ const stringify = require('remark-stringify')
 module.exports = function anchorLinksPlugin({
   compatibilitySlug,
   listWithInlineCodePrefix,
+  headings,
 } = {}) {
   return function transformer(tree) {
     // this array keeps track of existing slugs to prevent duplicates per-page
@@ -24,7 +25,7 @@ module.exports = function anchorLinksPlugin({
       //
       // start with headings
       if (is(node, 'heading')) {
-        return processHeading(node, compatibilitySlug, links)
+        return processHeading(node, compatibilitySlug, links, headings)
       }
 
       // next we check for lists with inline code. specifically, we're looking for:
@@ -48,8 +49,15 @@ module.exports = function anchorLinksPlugin({
   }
 }
 
-function processHeading(node, compatibilitySlug, links) {
+function processHeading(node, compatibilitySlug, links, headings) {
   const text = stringifyChildNodes(node)
+  const level = node.depth
+  const title = text
+    .substring(level + 1)
+    .replace(/<\/?[^>]*>/g, '') // Strip html
+    .replace(/\(\(#.*?\)\)/g, '') // Strip anchor link aliases
+    .replace(/\s+/g, ' ') // Collapse whitespace
+    .trim()
 
   // generate the slug and add a target element to the headline
   const slug = generateSlug(text, links)
@@ -89,6 +97,15 @@ function processHeading(node, compatibilitySlug, links) {
       text
     )} permalink">»</a>`,
   })
+
+  const headingData = {
+    aliases,
+    level,
+    permalinkSlug,
+    slug,
+    title,
+  }
+  headings?.push(headingData)
 
   return node
 }
