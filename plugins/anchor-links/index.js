@@ -68,7 +68,7 @@ function processHeading(node, compatibilitySlug, links, headings) {
 
   // handle anchor link aliases
   const aliases = processAlias(node, 1)
-  if (aliases) node.children.unshift(...aliasesToNodes(aliases, 'h'))
+  if (aliases.length) node.children.unshift(...aliasesToNodes(aliases, 'h'))
 
   // if the compatibilitySlug option is present, we generate it and add it
   // if it doesn't already match the existing slug
@@ -125,7 +125,7 @@ function processListWithInlineCode(
 
   // handle anchor link aliases
   const aliases = processAlias(pNode, 1)
-  if (aliases) liNode.children.unshift(...aliasesToNodes(aliases, 'lic'))
+  if (aliases.length) liNode.children.unshift(...aliasesToNodes(aliases, 'lic'))
 
   // if the compatibilitySlug option is present, we generate it and add it
   // if it doesn't already match the existing slug
@@ -177,7 +177,7 @@ function processAlias(node, startIndex = 0) {
     !node.children.length ||
     node.children.length <= startIndex
   )
-    return
+    return []
 
   // with the below regex, we look for ((#foo)) or ((#foo, #bar))
   //
@@ -226,7 +226,9 @@ function processAlias(node, startIndex = 0) {
     )
 
     // If there is a "((" pattern without a closing, never mind
-    if (endIndex < 0) return
+    if (endIndex < 0) {
+      return []
+    }
 
     // we know where the beginning and end nodes containing our pattern are, so we combine
     // their values into a single string
@@ -247,6 +249,8 @@ function processAlias(node, startIndex = 0) {
     // and then proceed to process it as if none of this ever happened!
     return _processAliases(node.children[startIndex], aliasRegex)
   }
+
+  return []
 }
 
 function _processAliases(node, aliasRegex) {
@@ -260,7 +264,7 @@ function _processAliases(node, aliasRegex) {
   node.value = node.value.replace(aliasRegex, '')
 
   // and return the aliases
-  return aliases
+  return aliases || []
 }
 
 // This converts a raw array of aliases to html "target" nodes

@@ -18,7 +18,7 @@ describe('anchor-links', () => {
       expect(headings).toMatchInlineSnapshot(`
       Array [
         Object {
-          "aliases": undefined,
+          "aliases": Array [],
           "level": 1,
           "permalinkSlug": "hello-world",
           "slug": "hello-world",
@@ -44,42 +44,42 @@ describe('anchor-links', () => {
       expect(headings).toMatchInlineSnapshot(`
       Array [
         Object {
-          "aliases": undefined,
+          "aliases": Array [],
           "level": 1,
           "permalinkSlug": "heading-1",
           "slug": "heading-1",
           "title": "Heading 1",
         },
         Object {
-          "aliases": undefined,
+          "aliases": Array [],
           "level": 2,
           "permalinkSlug": "heading-2",
           "slug": "heading-2",
           "title": "Heading 2",
         },
         Object {
-          "aliases": undefined,
+          "aliases": Array [],
           "level": 3,
           "permalinkSlug": "heading-3",
           "slug": "heading-3",
           "title": "Heading 3",
         },
         Object {
-          "aliases": undefined,
+          "aliases": Array [],
           "level": 4,
           "permalinkSlug": "heading-4",
           "slug": "heading-4",
           "title": "Heading 4",
         },
         Object {
-          "aliases": undefined,
+          "aliases": Array [],
           "level": 5,
           "permalinkSlug": "heading-5",
           "slug": "heading-5",
           "title": "Heading 5",
         },
         Object {
-          "aliases": undefined,
+          "aliases": Array [],
           "level": 6,
           "permalinkSlug": "heading-6",
           "slug": "heading-6",
@@ -122,35 +122,35 @@ describe('anchor-links', () => {
       expect(headings).toMatchInlineSnapshot(`
       Array [
         Object {
-          "aliases": undefined,
+          "aliases": Array [],
           "level": 1,
           "permalinkSlug": "hello-world",
           "slug": "hello-world",
           "title": "hello world",
         },
         Object {
-          "aliases": undefined,
+          "aliases": Array [],
           "level": 1,
           "permalinkSlug": "hello-world-1",
           "slug": "hello-world-1",
           "title": "hello world",
         },
         Object {
-          "aliases": undefined,
+          "aliases": Array [],
           "level": 1,
           "permalinkSlug": "foo",
           "slug": "foo",
           "title": "foo",
         },
         Object {
-          "aliases": undefined,
+          "aliases": Array [],
           "level": 1,
           "permalinkSlug": "hello-world-2",
           "slug": "hello-world-2",
           "title": "hello world",
         },
         Object {
-          "aliases": undefined,
+          "aliases": Array [],
           "level": 1,
           "permalinkSlug": "foo-1",
           "slug": "foo-1",
@@ -187,14 +187,14 @@ describe('anchor-links', () => {
       expect(headings).toMatchInlineSnapshot(`
       Array [
         Object {
-          "aliases": undefined,
+          "aliases": Array [],
           "level": 1,
           "permalinkSlug": "hello-world",
           "slug": "hello-world",
           "title": "hello world",
         },
         Object {
-          "aliases": undefined,
+          "aliases": Array [],
           "level": 1,
           "permalinkSlug": "hello-world-1",
           "slug": "hello-world-1",
@@ -225,14 +225,14 @@ describe('anchor-links', () => {
       expect(headings).toMatchInlineSnapshot(`
       Array [
         Object {
-          "aliases": undefined,
+          "aliases": Array [],
           "level": 1,
           "permalinkSlug": "hello-world",
           "slug": "hello-world",
           "title": "- hello world",
         },
         Object {
-          "aliases": undefined,
+          "aliases": Array [],
           "level": 1,
           "permalinkSlug": "hello-world-1",
           "slug": "hello-world-1",
@@ -271,21 +271,21 @@ describe('anchor-links', () => {
       expect(headings).toMatchInlineSnapshot(`
       Array [
         Object {
-          "aliases": undefined,
+          "aliases": Array [],
           "level": 1,
           "permalinkSlug": "hello-world",
           "slug": "hello-world",
           "title": "hEllO----world",
         },
         Object {
-          "aliases": undefined,
+          "aliases": Array [],
           "level": 1,
           "permalinkSlug": "hello-world-1",
           "slug": "hello-world-1",
           "title": "hello :&-- world",
         },
         Object {
-          "aliases": undefined,
+          "aliases": Array [],
           "level": 1,
           "permalinkSlug": "hello-world-foo",
           "slug": "hello-world-foo",
@@ -309,7 +309,7 @@ describe('anchor-links', () => {
       expect(headings).toMatchInlineSnapshot(`
       Array [
         Object {
-          "aliases": undefined,
+          "aliases": Array [],
           "level": 1,
           "permalinkSlug": "foo",
           "slug": "hello-world",
@@ -335,7 +335,7 @@ describe('anchor-links', () => {
       expect(headings).toMatchInlineSnapshot(`
       Array [
         Object {
-          "aliases": undefined,
+          "aliases": Array [],
           "level": 1,
           "permalinkSlug": "hello-world",
           "slug": "hello-world",
@@ -563,7 +563,7 @@ describe('anchor-links', () => {
       expect(headings).toMatchInlineSnapshot(`
       Array [
         Object {
-          "aliases": undefined,
+          "aliases": Array [],
           "level": 1,
           "permalinkSlug": "foo",
           "slug": "foo",
@@ -594,7 +594,7 @@ describe('anchor-links', () => {
       expect(headings).toMatchInlineSnapshot(`
       Array [
         Object {
-          "aliases": undefined,
+          "aliases": Array [],
           "level": 1,
           "permalinkSlug": "foo",
           "slug": "foo",
