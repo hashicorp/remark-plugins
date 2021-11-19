@@ -1,3 +1,5 @@
+__Deprecated: This repository has been archived, our remark plugins now live at [hashicorp/web-platform-packages](https://github.com/hashicorp/web-platform-packages/tree/main/packages/remark-plugins)__
+
 # HashiCorp Remark Plugins
 
 A potpourri of [remark](https://github.com/remarkjs/remark) plugins used by [HashiCorp](https://www.hashicorp.com/) to process markdown files.
