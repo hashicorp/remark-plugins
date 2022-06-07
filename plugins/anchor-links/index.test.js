@@ -435,6 +435,30 @@ describe('anchor-links', () => {
       ]
       `)
     })
+
+    test.skip('TODO: anchor aliases, with multiple nodes', () => {
+      headings = []
+      expect(execute('# hello **world** ((#\\_foo))', { headings })).toMatch(
+        expectedHeadingResult({
+          slug: 'hello-world',
+          text: 'hello world',
+          compatSlugs: ['_foo'],
+        })
+      )
+      expect(headings).toMatchInlineSnapshot(`
+      Array [
+        Object {
+          "aliases": Array [
+            "_foo",
+          ],
+          "level": 1,
+          "permalinkSlug": "_foo",
+          "slug": "hello-world",
+          "title": "hello world",
+        },
+      ]
+      `)
+    })
   })
 
   describe('lists starting with inline code', () => {
