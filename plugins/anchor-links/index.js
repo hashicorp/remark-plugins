@@ -56,18 +56,25 @@ function processHeading(node, compatibilitySlug, links, headings) {
     .substring(level + 1)
     .replace(/<\/?[^>]*>/g, '') // Strip html
     .replace(/\(\(#.*?\)\)/g, '') // Strip anchor link aliases
+    .replace(/»/g, '') // Safeguard against double-running this plugin
     .replace(/\s+/g, ' ') // Collapse whitespace
     .trim()
 
-  // generate the slug and add a target element to the headline
+  // generate the slug and use it as the headline's id property
   const slug = generateSlug(text, links)
-  node.children.unshift({
-    type: 'html',
-    value: `<a class="__target-h" id="${slug}" aria-hidden="true"></a>`,
-  })
+  node.data = {
+    ...node.data,
+    hProperties: { ...node.data?.hProperties, id: slug },
+  }
 
-  // handle anchor link aliases
-  const aliases = processAlias(node, 1)
+  /**
+   * Handle anchor link aliases
+   *
+   * Note: depends on children of heading element! Expects first child,
+   * at index 0, to be the text element. As well, aliases must be attached
+   * to separate __target-h elements.
+   */
+  const aliases = processAlias(node, 0)
   if (aliases.length) node.children.unshift(...aliasesToNodes(aliases, 'h'))
 
   // if the compatibilitySlug option is present, we generate it and add it
@@ -241,7 +248,8 @@ function processAlias(node, startIndex = 0) {
 
     // now, we replace all of the old broken up pieces with a single, combined node containing
     // the full text of the alias
-    node.children.splice(startIndex, endIndex, {
+    const deleteCount = endIndex - startIndex + 1
+    node.children.splice(startIndex, deleteCount, {
       type: 'text',
       value: combinedText,
     })
