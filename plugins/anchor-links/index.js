@@ -53,7 +53,6 @@ function processHeading(node, compatibilitySlug, links, headings) {
   const text = stringifyChildNodes(node)
   const level = node.depth
   const title = text
-    .substring(level + 1)
     .replace(/<\/?[^>]*>/g, '') // Strip html
     .replace(/\(\(#.*?\)\)/g, '') // Strip anchor link aliases
     .replace(/»/g, '') // Safeguard against double-running this plugin
@@ -292,14 +291,9 @@ function aliasesToNodes(aliases, id) {
 // not a type that standard remark recognizes. we can't accommodate all
 // types of custom remark setups, so we simply fall back if it doesn't work
 function stringifyChildNodes(node) {
-  let text
-  try {
-    text = remark().use(stringify).stringify(node)
-  } catch (_) {
-    text = node.children.reduce((m, s) => {
-      if (s.value) m += s.value
-      return m
-    }, '')
-  }
+  const text = node.children.reduce((m, s) => {
+    if (s.value) m += s.value
+    return m
+  }, '')
   return text
 }
