@@ -1,7 +1,7 @@
 {
   "name": "@hashicorp/remark-plugins",
   "description": "A potpourri of remark plugins used to process .mdx files",
-  "version": "4.0.0",
+  "version": "4.0.0-canary.0",
   "author": "Jeff Escalante",
   "bugs": "https://github.com/hashicorp/remark-plugins/issues",
   "contributors": [

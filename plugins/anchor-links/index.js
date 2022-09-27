@@ -53,7 +53,6 @@ function processHeading(node, compatibilitySlug, links, headings) {
   const text = stringifyChildNodes(node)
   const level = node.depth
   const title = text
-    .substring(level + 1)
     .replace(/<\/?[^>]*>/g, '') // Strip html
     .replace(/\(\(#.*?\)\)/g, '') // Strip anchor link aliases
     .replace(/»/g, '') // Safeguard against double-running this plugin
@@ -292,14 +291,25 @@ function aliasesToNodes(aliases, id) {
 // not a type that standard remark recognizes. we can't accommodate all
 // types of custom remark setups, so we simply fall back if it doesn't work
 function stringifyChildNodes(node) {
-  let text
-  try {
-    text = remark().use(stringify).stringify(node)
-  } catch (_) {
-    text = node.children.reduce((m, s) => {
-      if (s.value) m += s.value
-      return m
-    }, '')
-  }
+  return getChildNodesText(node)
+}
+
+/**
+ * Collect text from children nodes. This will visit
+ * nodes recursively via "depth-first" strategy.
+ *
+ * @param {import('unist').Parent | import('unist').Node} node
+ * @returns {string}
+ */
+function getChildNodesText(node) {
+  const text = node.children.reduce((acc, child) => {
+    if ('children' in child) {
+      acc += getChildNodesText(child)
+    } else if ('value' in child) {
+      acc += child.value
+    }
+    return acc
+  }, '')
+
   return text
 }
