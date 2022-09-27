@@ -460,18 +460,23 @@ describe('anchor-links', () => {
       `)
     })
 
-    test('returns only text content', () => {
+    test.only('returns only text content', () => {
       const headings = []
       execute(
         `## context.Context
-
 ## \*component.Source
-
-## \*component.JobInfo`,
+## ~~strikethrough~~
+## _italic_
+## [complex](https://hashicorp.com) heading **element**`,
         { headings }
       )
+
+      expect(headings.length).toBe(5)
+
       expect(headings[1].title).toEqual('*component.Source')
-      expect(headings[2].title).toEqual('*component.JobInfo')
+      expect(headings[2].title).toEqual('strikethrough')
+      expect(headings[3].title).toEqual('italic')
+      expect(headings[4].title).toEqual('complex heading element')
     })
   })
 
