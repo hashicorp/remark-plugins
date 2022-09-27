@@ -460,7 +460,7 @@ describe('anchor-links', () => {
       `)
     })
 
-    test.only('returns only text content', () => {
+    test('returns only text content', () => {
       const headings = []
       execute(
         `## context.Context
