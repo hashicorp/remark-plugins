@@ -93,6 +93,40 @@ describe('anchor-links', () => {
       expect(headings).toMatchInlineSnapshot(`Array []`)
     })
 
+    test('ignores headings in <Tabs/>', () => {
+      const headings = []
+      const lines = `# Root Heading
+
+<Tabs>
+
+<Tab>
+
+## First Tab Heading
+
+Some content in the first tab.
+
+</Tab>
+
+<Tab>
+
+## Second Tab Heading
+
+Second tab also has content
+
+</Tab>
+
+</Tabs>
+
+## Heading After Tabs
+
+Words written after the tabbed section, not within it.
+      `.split('\n')
+
+      console.log({ lines })
+      execute(lines, { headings })
+      expect(headings).toMatchInlineSnapshot(`Array []`)
+    })
+
     test('duplicate slugs', () => {
       const headings = []
       expect(
