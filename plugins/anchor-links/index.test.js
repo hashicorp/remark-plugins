@@ -121,10 +121,23 @@ Second tab also has content
 
 Words written after the tabbed section, not within it.
       `.split('\n')
-
-      console.log({ lines })
       execute(lines, { headings })
-      expect(headings).toMatchInlineSnapshot(`Array []`)
+      expect(headings).toMatchInlineSnapshot(`Array [
+Object {
+  "aliases": Array [],
+  "level": 1,
+  "permalinkSlug": "root-heading",
+  "slug": "root-heading",
+  "title": "Root Heading",
+},
+Object {
+  "aliases": Array [],
+  "level": 2,
+  "permalinkSlug": "heading-after-tabs",
+  "slug": "heading-after-tabs",
+  "title": "Heading After Tabs",
+},
+]`)
     })
 
     test('duplicate slugs', () => {
