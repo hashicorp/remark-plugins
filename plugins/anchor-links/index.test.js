@@ -100,7 +100,7 @@ describe('anchor-links', () => {
       expect(headings).toMatchInlineSnapshot(`Array []`)
     })
 
-    test('ignores headings in <Tabs/>', () => {
+    test('adds correct tabbedSectionDepth for headings in <Tabs/>', () => {
       const headings = []
       const lines = `# Root Heading
 
