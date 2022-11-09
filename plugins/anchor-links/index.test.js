@@ -93,7 +93,7 @@ describe('anchor-links', () => {
       expect(headings).toMatchInlineSnapshot(`Array []`)
     })
 
-    test('ignores headings in <Tabs/>', () => {
+    test.only('ignores headings in <Tabs/>', () => {
       const headings = []
       const lines = `# Root Heading
 
@@ -128,13 +128,31 @@ Object {
   "level": 1,
   "permalinkSlug": "root-heading",
   "slug": "root-heading",
+  "tabbedSectionDepth": 0,
   "title": "Root Heading",
+},
+Object {
+  "aliases": Array [],
+  "level": 2,
+  "permalinkSlug": "first-tab-heading",
+  "slug": "first-tab-heading",
+  "tabbedSectionDepth": 1,
+  "title": "First Tab Heading",
+},
+Object {
+  "aliases": Array [],
+  "level": 2,
+  "permalinkSlug": "second-tab-heading",
+  "slug": "second-tab-heading",
+  "tabbedSectionDepth": 1,
+  "title": "Second Tab Heading",
 },
 Object {
   "aliases": Array [],
   "level": 2,
   "permalinkSlug": "heading-after-tabs",
   "slug": "heading-after-tabs",
+  "tabbedSectionDepth": 0,
   "title": "Heading After Tabs",
 },
 ]`)

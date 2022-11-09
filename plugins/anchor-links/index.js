@@ -19,13 +19,46 @@ module.exports = function anchorLinksPlugin({
     // this array keeps track of existing slugs to prevent duplicates per-page
     const links = []
 
+    /**
+     * Keep track of whether we're within <Tabs />.
+     * If we're in tabbed sections, we may not want to show headings
+     * in our table of contents.
+     */
+    let tabbedSectionDepth = 0
+
     return map(tree, (node) => {
+      /**
+       * Check if this node opens or closes <Tabs />.
+       * If it opens <Tabs>, increase the tabbedSectionDepth by 1.
+       * If it closes </Tabs>, decrease the tabbedSectionDepth by 1.
+       */
+      // console.log({ node })
+      const isHtmlNode = node.type === 'html'
+      if (isHtmlNode) {
+        const isTabsOpening = /\<Tabs/.test(node.value)
+        const isTabsClosing = /\<\/Tabs/.test(node.value)
+        if (isTabsOpening) {
+          tabbedSectionDepth += 1
+        } else if (isTabsClosing) {
+          tabbedSectionDepth -= 1
+        }
+
+        // console.log({ isTabsOpening, isTabsClosing })
+      }
+
       // since we are adding anchor links to two separate patterns: headings and
       // lists with inline code, we first sort into these categories.
       //
       // start with headings
+      // console.log({ isWithinTabs, tabbedSectionDepth })
       if (is(node, 'heading')) {
-        return processHeading(node, compatibilitySlug, links, headings)
+        return processHeading(
+          node,
+          compatibilitySlug,
+          links,
+          headings,
+          tabbedSectionDepth
+        )
       }
 
       // next we check for lists with inline code. specifically, we're looking for:
@@ -49,7 +82,13 @@ module.exports = function anchorLinksPlugin({
   }
 }
 
-function processHeading(node, compatibilitySlug, links, headings) {
+function processHeading(
+  node,
+  compatibilitySlug,
+  links,
+  headings,
+  tabbedSectionDepth
+) {
   const text = stringifyChildNodes(node)
   const level = node.depth
   const title = text
@@ -110,6 +149,7 @@ function processHeading(node, compatibilitySlug, links, headings) {
     permalinkSlug,
     slug,
     title,
+    tabbedSectionDepth,
   }
   headings?.push(headingData)
 
