@@ -32,8 +32,8 @@ module.exports = function anchorLinksPlugin({
        * If it opens <Tabs>, increase the tabbedSectionDepth.
        * If it closes </Tabs>, decrease the tabbedSectionDepth.
        */
-      const isHtmlNode = node.type === 'html'
-      if (isHtmlNode) {
+      const isHtmlOrJsxNode = node.type === 'html' || node.type === 'jsx'
+      if (isHtmlOrJsxNode) {
         // Note that a single HTML node could potentially contain multiple tags
         const openTagMatches = node.value.match(/\<Tabs/)
         const openTagCount = openTagMatches ? openTagMatches.length : 0
