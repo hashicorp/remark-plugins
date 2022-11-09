@@ -29,28 +29,24 @@ module.exports = function anchorLinksPlugin({
     return map(tree, (node) => {
       /**
        * Check if this node opens or closes <Tabs />.
-       * If it opens <Tabs>, increase the tabbedSectionDepth by 1.
-       * If it closes </Tabs>, decrease the tabbedSectionDepth by 1.
+       * If it opens <Tabs>, increase the tabbedSectionDepth.
+       * If it closes </Tabs>, decrease the tabbedSectionDepth.
        */
-      // console.log({ node })
       const isHtmlNode = node.type === 'html'
       if (isHtmlNode) {
-        const isTabsOpening = /\<Tabs/.test(node.value)
-        const isTabsClosing = /\<\/Tabs/.test(node.value)
-        if (isTabsOpening) {
-          tabbedSectionDepth += 1
-        } else if (isTabsClosing) {
-          tabbedSectionDepth -= 1
-        }
-
-        // console.log({ isTabsOpening, isTabsClosing })
+        // Note that a single HTML node could potentially contain multiple tags
+        const openTagMatches = node.value.match(/\<Tabs/)
+        const openTagCount = openTagMatches ? openTagMatches.length : 0
+        tabbedSectionDepth += openTagCount
+        const closeTagMatches = node.value.match(/\<\/Tabs/)
+        const closeTagCount = closeTagMatches ? closeTagMatches.length : 0
+        tabbedSectionDepth -= closeTagCount
       }
 
       // since we are adding anchor links to two separate patterns: headings and
       // lists with inline code, we first sort into these categories.
       //
       // start with headings
-      // console.log({ isWithinTabs, tabbedSectionDepth })
       if (is(node, 'heading')) {
         return processHeading(
           node,
