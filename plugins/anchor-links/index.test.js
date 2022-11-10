@@ -15,15 +15,16 @@ describe('anchor-links', () => {
         ].join('')
       )
       expect(headings).toMatchInlineSnapshot(`
-      Array [
-        Object {
-          "aliases": Array [],
-          "level": 1,
-          "permalinkSlug": "hello-world",
-          "slug": "hello-world",
-          "title": "hello world",
-        },
-      ]
+        Array [
+          Object {
+            "aliases": Array [],
+            "level": 1,
+            "permalinkSlug": "hello-world",
+            "slug": "hello-world",
+            "tabbedSectionDepth": 0,
+            "title": "hello world",
+          },
+        ]
       `)
     })
 
@@ -41,56 +42,143 @@ describe('anchor-links', () => {
         { headings }
       )
       expect(headings).toMatchInlineSnapshot(`
-      Array [
-        Object {
-          "aliases": Array [],
-          "level": 1,
-          "permalinkSlug": "heading-1",
-          "slug": "heading-1",
-          "title": "Heading 1",
-        },
-        Object {
-          "aliases": Array [],
-          "level": 2,
-          "permalinkSlug": "heading-2",
-          "slug": "heading-2",
-          "title": "Heading 2",
-        },
-        Object {
-          "aliases": Array [],
-          "level": 3,
-          "permalinkSlug": "heading-3",
-          "slug": "heading-3",
-          "title": "Heading 3",
-        },
-        Object {
-          "aliases": Array [],
-          "level": 4,
-          "permalinkSlug": "heading-4",
-          "slug": "heading-4",
-          "title": "Heading 4",
-        },
-        Object {
-          "aliases": Array [],
-          "level": 5,
-          "permalinkSlug": "heading-5",
-          "slug": "heading-5",
-          "title": "Heading 5",
-        },
-        Object {
-          "aliases": Array [],
-          "level": 6,
-          "permalinkSlug": "heading-6",
-          "slug": "heading-6",
-          "title": "Heading 6",
-        },
-      ]
+        Array [
+          Object {
+            "aliases": Array [],
+            "level": 1,
+            "permalinkSlug": "heading-1",
+            "slug": "heading-1",
+            "tabbedSectionDepth": 0,
+            "title": "Heading 1",
+          },
+          Object {
+            "aliases": Array [],
+            "level": 2,
+            "permalinkSlug": "heading-2",
+            "slug": "heading-2",
+            "tabbedSectionDepth": 0,
+            "title": "Heading 2",
+          },
+          Object {
+            "aliases": Array [],
+            "level": 3,
+            "permalinkSlug": "heading-3",
+            "slug": "heading-3",
+            "tabbedSectionDepth": 0,
+            "title": "Heading 3",
+          },
+          Object {
+            "aliases": Array [],
+            "level": 4,
+            "permalinkSlug": "heading-4",
+            "slug": "heading-4",
+            "tabbedSectionDepth": 0,
+            "title": "Heading 4",
+          },
+          Object {
+            "aliases": Array [],
+            "level": 5,
+            "permalinkSlug": "heading-5",
+            "slug": "heading-5",
+            "tabbedSectionDepth": 0,
+            "title": "Heading 5",
+          },
+          Object {
+            "aliases": Array [],
+            "level": 6,
+            "permalinkSlug": "heading-6",
+            "slug": "heading-6",
+            "tabbedSectionDepth": 0,
+            "title": "Heading 6",
+          },
+        ]
       `)
     })
 
     test('without headings option', () => {
       execute('# hello world')
       expect(headings).toMatchInlineSnapshot(`Array []`)
+    })
+
+    test('adds correct tabbedSectionDepth for headings in <Tabs/>', () => {
+      const headings = []
+      const lines = `# Root Heading
+
+<Tabs>
+
+<Tab>
+
+## First Tab Heading
+
+Some content in the first tab.
+
+</Tab>
+
+<Tab>
+
+## Second Tab Heading
+
+Second tab also has content
+
+</Tab>
+
+</Tabs>
+
+## Heading After Tabs
+
+Words written after the tabbed section, not within it.
+
+<Tabs></Tabs><Tabs></Tabs>
+
+## Another Heading After Tabs
+
+The multiple Tabs tags in one HTML node above should be handled correctly.
+      `.split('\n')
+      execute(lines, { headings })
+      expect(headings).toMatchInlineSnapshot(`
+        Array [
+          Object {
+            "aliases": Array [],
+            "level": 1,
+            "permalinkSlug": "root-heading",
+            "slug": "root-heading",
+            "tabbedSectionDepth": 0,
+            "title": "Root Heading",
+          },
+          Object {
+            "aliases": Array [],
+            "level": 2,
+            "permalinkSlug": "first-tab-heading",
+            "slug": "first-tab-heading",
+            "tabbedSectionDepth": 1,
+            "title": "First Tab Heading",
+          },
+          Object {
+            "aliases": Array [],
+            "level": 2,
+            "permalinkSlug": "second-tab-heading",
+            "slug": "second-tab-heading",
+            "tabbedSectionDepth": 1,
+            "title": "Second Tab Heading",
+          },
+          Object {
+            "aliases": Array [],
+            "level": 2,
+            "permalinkSlug": "heading-after-tabs",
+            "slug": "heading-after-tabs",
+            "tabbedSectionDepth": 0,
+            "title": "Heading After Tabs",
+          },
+          Object {
+            "aliases": Array [],
+            "level": 2,
+            "permalinkSlug": "another-heading-after-tabs",
+            "slug": "another-heading-after-tabs",
+            "tabbedSectionDepth": 0,
+            "title": "Another Heading After Tabs",
+          },
+        ]
+      `)
     })
 
     test('duplicate slugs', () => {
@@ -119,43 +207,48 @@ describe('anchor-links', () => {
         ].join('\n')
       )
       expect(headings).toMatchInlineSnapshot(`
-      Array [
-        Object {
-          "aliases": Array [],
-          "level": 1,
-          "permalinkSlug": "hello-world",
-          "slug": "hello-world",
-          "title": "hello world",
-        },
-        Object {
-          "aliases": Array [],
-          "level": 1,
-          "permalinkSlug": "hello-world-1",
-          "slug": "hello-world-1",
-          "title": "hello world",
-        },
-        Object {
-          "aliases": Array [],
-          "level": 1,
-          "permalinkSlug": "foo",
-          "slug": "foo",
-          "title": "foo",
-        },
-        Object {
-          "aliases": Array [],
-          "level": 1,
-          "permalinkSlug": "hello-world-2",
-          "slug": "hello-world-2",
-          "title": "hello world",
-        },
-        Object {
-          "aliases": Array [],
-          "level": 1,
-          "permalinkSlug": "foo-1",
-          "slug": "foo-1",
-          "title": "foo",
-        },
-      ]
+        Array [
+          Object {
+            "aliases": Array [],
+            "level": 1,
+            "permalinkSlug": "hello-world",
+            "slug": "hello-world",
+            "tabbedSectionDepth": 0,
+            "title": "hello world",
+          },
+          Object {
+            "aliases": Array [],
+            "level": 1,
+            "permalinkSlug": "hello-world-1",
+            "slug": "hello-world-1",
+            "tabbedSectionDepth": 0,
+            "title": "hello world",
+          },
+          Object {
+            "aliases": Array [],
+            "level": 1,
+            "permalinkSlug": "foo",
+            "slug": "foo",
+            "tabbedSectionDepth": 0,
+            "title": "foo",
+          },
+          Object {
+            "aliases": Array [],
+            "level": 1,
+            "permalinkSlug": "hello-world-2",
+            "slug": "hello-world-2",
+            "tabbedSectionDepth": 0,
+            "title": "hello world",
+          },
+          Object {
+            "aliases": Array [],
+            "level": 1,
+            "permalinkSlug": "foo-1",
+            "slug": "foo-1",
+            "tabbedSectionDepth": 0,
+            "title": "foo",
+          },
+        ]
       `)
     })
 
@@ -184,22 +277,24 @@ describe('anchor-links', () => {
         ].join('\n')
       )
       expect(headings).toMatchInlineSnapshot(`
-      Array [
-        Object {
-          "aliases": Array [],
-          "level": 1,
-          "permalinkSlug": "hello-world",
-          "slug": "hello-world",
-          "title": "hello world",
-        },
-        Object {
-          "aliases": Array [],
-          "level": 1,
-          "permalinkSlug": "hello-world-1",
-          "slug": "hello-world-1",
-          "title": "hello world",
-        },
-      ]
+        Array [
+          Object {
+            "aliases": Array [],
+            "level": 1,
+            "permalinkSlug": "hello-world",
+            "slug": "hello-world",
+            "tabbedSectionDepth": 0,
+            "title": "hello world",
+          },
+          Object {
+            "aliases": Array [],
+            "level": 1,
+            "permalinkSlug": "hello-world-1",
+            "slug": "hello-world-1",
+            "tabbedSectionDepth": 0,
+            "title": "hello world",
+          },
+        ]
       `)
     })
 
@@ -222,22 +317,24 @@ describe('anchor-links', () => {
         ].join('\n')
       )
       expect(headings).toMatchInlineSnapshot(`
-      Array [
-        Object {
-          "aliases": Array [],
-          "level": 1,
-          "permalinkSlug": "hello-world",
-          "slug": "hello-world",
-          "title": "- hello world",
-        },
-        Object {
-          "aliases": Array [],
-          "level": 1,
-          "permalinkSlug": "hello-world-1",
-          "slug": "hello-world-1",
-          "title": "hello world",
-        },
-      ]
+        Array [
+          Object {
+            "aliases": Array [],
+            "level": 1,
+            "permalinkSlug": "hello-world",
+            "slug": "hello-world",
+            "tabbedSectionDepth": 0,
+            "title": "- hello world",
+          },
+          Object {
+            "aliases": Array [],
+            "level": 1,
+            "permalinkSlug": "hello-world-1",
+            "slug": "hello-world-1",
+            "tabbedSectionDepth": 0,
+            "title": "hello world",
+          },
+        ]
       `)
     })
 
@@ -268,29 +365,32 @@ describe('anchor-links', () => {
         ].join('\n')
       )
       expect(headings).toMatchInlineSnapshot(`
-      Array [
-        Object {
-          "aliases": Array [],
-          "level": 1,
-          "permalinkSlug": "hello-world",
-          "slug": "hello-world",
-          "title": "hEllO----world",
-        },
-        Object {
-          "aliases": Array [],
-          "level": 1,
-          "permalinkSlug": "hello-world-1",
-          "slug": "hello-world-1",
-          "title": "hello :&-- world",
-        },
-        Object {
-          "aliases": Array [],
-          "level": 1,
-          "permalinkSlug": "hello-world-foo",
-          "slug": "hello-world-foo",
-          "title": "hello world (foo)()",
-        },
-      ]
+        Array [
+          Object {
+            "aliases": Array [],
+            "level": 1,
+            "permalinkSlug": "hello-world",
+            "slug": "hello-world",
+            "tabbedSectionDepth": 0,
+            "title": "hEllO----world",
+          },
+          Object {
+            "aliases": Array [],
+            "level": 1,
+            "permalinkSlug": "hello-world-1",
+            "slug": "hello-world-1",
+            "tabbedSectionDepth": 0,
+            "title": "hello :&-- world",
+          },
+          Object {
+            "aliases": Array [],
+            "level": 1,
+            "permalinkSlug": "hello-world-foo",
+            "slug": "hello-world-foo",
+            "tabbedSectionDepth": 0,
+            "title": "hello world (foo)()",
+          },
+        ]
       `)
     })
 
@@ -306,15 +406,16 @@ describe('anchor-links', () => {
         })
       )
       expect(headings).toMatchInlineSnapshot(`
-      Array [
-        Object {
-          "aliases": Array [],
-          "level": 1,
-          "permalinkSlug": "foo",
-          "slug": "hello-world",
-          "title": "hello world",
-        },
-      ]
+        Array [
+          Object {
+            "aliases": Array [],
+            "level": 1,
+            "permalinkSlug": "foo",
+            "slug": "hello-world",
+            "tabbedSectionDepth": 0,
+            "title": "hello world",
+          },
+        ]
       `)
     })
 
@@ -332,15 +433,16 @@ describe('anchor-links', () => {
         })
       )
       expect(headings).toMatchInlineSnapshot(`
-      Array [
-        Object {
-          "aliases": Array [],
-          "level": 1,
-          "permalinkSlug": "hello-world",
-          "slug": "hello-world",
-          "title": "hello world",
-        },
-      ]
+        Array [
+          Object {
+            "aliases": Array [],
+            "level": 1,
+            "permalinkSlug": "hello-world",
+            "slug": "hello-world",
+            "tabbedSectionDepth": 0,
+            "title": "hello world",
+          },
+        ]
       `)
     })
 
@@ -354,17 +456,18 @@ describe('anchor-links', () => {
         })
       )
       expect(headings).toMatchInlineSnapshot(`
-      Array [
-        Object {
-          "aliases": Array [
-            "foo",
-          ],
-          "level": 1,
-          "permalinkSlug": "foo",
-          "slug": "hello-world",
-          "title": "hello world",
-        },
-      ]
+        Array [
+          Object {
+            "aliases": Array [
+              "foo",
+            ],
+            "level": 1,
+            "permalinkSlug": "foo",
+            "slug": "hello-world",
+            "tabbedSectionDepth": 0,
+            "title": "hello world",
+          },
+        ]
       `)
 
       headings = []
@@ -376,17 +479,18 @@ describe('anchor-links', () => {
         })
       )
       expect(headings).toMatchInlineSnapshot(`
-      Array [
-        Object {
-          "aliases": Array [
-            "_foo",
-          ],
-          "level": 1,
-          "permalinkSlug": "_foo",
-          "slug": "hello-world",
-          "title": "hello world",
-        },
-      ]
+        Array [
+          Object {
+            "aliases": Array [
+              "_foo",
+            ],
+            "level": 1,
+            "permalinkSlug": "_foo",
+            "slug": "hello-world",
+            "tabbedSectionDepth": 0,
+            "title": "hello world",
+          },
+        ]
       `)
 
       headings = []
@@ -398,18 +502,19 @@ describe('anchor-links', () => {
         })
       )
       expect(headings).toMatchInlineSnapshot(`
-      Array [
-        Object {
-          "aliases": Array [
-            "foo",
-            "bar",
-          ],
-          "level": 1,
-          "permalinkSlug": "foo",
-          "slug": "hello-world",
-          "title": "hello world",
-        },
-      ]
+        Array [
+          Object {
+            "aliases": Array [
+              "foo",
+              "bar",
+            ],
+            "level": 1,
+            "permalinkSlug": "foo",
+            "slug": "hello-world",
+            "tabbedSectionDepth": 0,
+            "title": "hello world",
+          },
+        ]
       `)
 
       // this *shouldn't* work but currently does, so it has coverage
@@ -422,17 +527,18 @@ describe('anchor-links', () => {
         })
       )
       expect(headings).toMatchInlineSnapshot(`
-      Array [
-        Object {
-          "aliases": Array [
-            "foo",
-          ],
-          "level": 1,
-          "permalinkSlug": "foo",
-          "slug": "hello-world-more-text",
-          "title": "hello world more text",
-        },
-      ]
+        Array [
+          Object {
+            "aliases": Array [
+              "foo",
+            ],
+            "level": 1,
+            "permalinkSlug": "foo",
+            "slug": "hello-world-more-text",
+            "tabbedSectionDepth": 0,
+            "title": "hello world more text",
+          },
+        ]
       `)
     })
 
@@ -446,18 +552,18 @@ describe('anchor-links', () => {
         })
       )
       expect(headings).toMatchInlineSnapshot(`
-      Array [
-        Object {
-          "aliases": Array [
-            "_foo",
-          ],
-          "level": 1,
-          "permalinkSlug": "_foo",
-          "slug": "hello-world",
-          "title": "hello world",
-        },
-      ]
-      `)
+              Array [
+                Object {
+                  "aliases": Array [
+                    "_foo",
+                  ],
+                  "level": 1,
+                  "permalinkSlug": "_foo",
+                  "slug": "hello-world",
+                  "title": "hello world",
+                },
+              ]
+            `)
     })
 
     test('returns only text content', () => {
@@ -603,15 +709,16 @@ describe('anchor-links', () => {
         ].join('\n')
       )
       expect(headings).toMatchInlineSnapshot(`
-      Array [
-        Object {
-          "aliases": Array [],
-          "level": 1,
-          "permalinkSlug": "foo",
-          "slug": "foo",
-          "title": "foo",
-        },
-      ]
+        Array [
+          Object {
+            "aliases": Array [],
+            "level": 1,
+            "permalinkSlug": "foo",
+            "slug": "foo",
+            "tabbedSectionDepth": 0,
+            "title": "foo",
+          },
+        ]
       `)
     })
 
@@ -634,15 +741,16 @@ describe('anchor-links', () => {
         ].join('\n')
       )
       expect(headings).toMatchInlineSnapshot(`
-      Array [
-        Object {
-          "aliases": Array [],
-          "level": 1,
-          "permalinkSlug": "foo",
-          "slug": "foo",
-          "title": "foo",
-        },
-      ]
+        Array [
+          Object {
+            "aliases": Array [],
+            "level": 1,
+            "permalinkSlug": "foo",
+            "slug": "foo",
+            "tabbedSectionDepth": 0,
+            "title": "foo",
+          },
+        ]
       `)
     })
 

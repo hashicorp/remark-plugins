@@ -19,13 +19,42 @@ module.exports = function anchorLinksPlugin({
     // this array keeps track of existing slugs to prevent duplicates per-page
     const links = []
 
+    /**
+     * Keep track of whether we're within <Tabs />.
+     * If we're in tabbed sections, we may not want to show headings
+     * in our table of contents.
+     */
+    let tabbedSectionDepth = 0
+
     return map(tree, (node) => {
+      /**
+       * Check if this node opens or closes <Tabs />.
+       * If it opens <Tabs>, increase the tabbedSectionDepth.
+       * If it closes </Tabs>, decrease the tabbedSectionDepth.
+       */
+      const isHtmlOrJsxNode = node.type === 'html' || node.type === 'jsx'
+      if (isHtmlOrJsxNode) {
+        // Note that a single HTML node could potentially contain multiple tags
+        const openTagMatches = node.value.match(/\<Tabs/)
+        const openTagCount = openTagMatches ? openTagMatches.length : 0
+        tabbedSectionDepth += openTagCount
+        const closeTagMatches = node.value.match(/\<\/Tabs/)
+        const closeTagCount = closeTagMatches ? closeTagMatches.length : 0
+        tabbedSectionDepth -= closeTagCount
+      }
+
       // since we are adding anchor links to two separate patterns: headings and
       // lists with inline code, we first sort into these categories.
       //
       // start with headings
       if (is(node, 'heading')) {
-        return processHeading(node, compatibilitySlug, links, headings)
+        return processHeading(
+          node,
+          compatibilitySlug,
+          links,
+          headings,
+          tabbedSectionDepth
+        )
       }
 
       // next we check for lists with inline code. specifically, we're looking for:
@@ -49,7 +78,13 @@ module.exports = function anchorLinksPlugin({
   }
 }
 
-function processHeading(node, compatibilitySlug, links, headings) {
+function processHeading(
+  node,
+  compatibilitySlug,
+  links,
+  headings,
+  tabbedSectionDepth
+) {
   const text = stringifyChildNodes(node)
   const level = node.depth
   const title = text
@@ -110,6 +145,7 @@ function processHeading(node, compatibilitySlug, links, headings) {
     permalinkSlug,
     slug,
     title,
+    tabbedSectionDepth,
   }
   headings?.push(headingData)
 
