@@ -866,6 +866,27 @@ The multiple Tabs tags in one HTML node above should be handled correctly.
         expect(nestedHeadings.length).toBe(expectedOutput)
       })
     })
+
+    describe('two nested headings', () => {
+      test.each([
+        ['tutorial-terraform-aks.mdx', 2],
+        ['tutorial-terraform-gke.mdx', 2],
+      ])('%s', (fileName, expectedOutput) => {
+        const headings = []
+
+        const filePath = `${process.cwd()}/plugins/anchor-links/fixtures/02-nested-headings/${fileName}`
+        const fileContents = fs.readFileSync(filePath).toString()
+        const fileLines = fileContents.split('\n')
+
+        execute(fileLines, { headings })
+
+        const nestedHeadings = headings.filter(
+          ({ tabbedSectionDepth }) =>
+            typeof tabbedSectionDepth === 'number' && tabbedSectionDepth > 0
+        )
+        expect(nestedHeadings.length).toBe(expectedOutput)
+      })
+    })
   })
 })
 
