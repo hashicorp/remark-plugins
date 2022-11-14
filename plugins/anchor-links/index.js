@@ -47,14 +47,13 @@ module.exports = function anchorLinksPlugin({
        */
       const isHtmlOrJsxNode = node.type === 'html' || node.type === 'jsx'
       if (isHtmlOrJsxNode) {
-        node.value.split('\n').forEach((nodeLine) => {
-          // Using `startsWith` enables seamlessly supporting future props
-          if (nodeLine.startsWith('<Tabs')) {
-            tabbedSectionDepth += 1
-          } else if (nodeLine === '</Tabs>') {
-            tabbedSectionDepth -= 1
-          }
-        })
+        // Note that a single HTML node could potentially contain multiple tags
+        const openTagMatches = node.value.match(/\<Tabs/g)
+        const openTagCount = openTagMatches ? openTagMatches.length : 0
+        tabbedSectionDepth += openTagCount
+        const closeTagMatches = node.value.match(/\<\/Tabs/g)
+        const closeTagCount = closeTagMatches ? closeTagMatches.length : 0
+        tabbedSectionDepth -= closeTagCount
       }
 
       // since we are adding anchor links to two separate patterns: headings and
