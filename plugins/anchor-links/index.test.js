@@ -829,6 +829,7 @@ The multiple Tabs tags in one HTML node above should be handled correctly.
       test.each([
         ['tutorial-terraform-aks.mdx', 0],
         ['tutorial-terraform-gke.mdx', 0],
+        ['tutorials-nomad-format-output-with-templates.mdx', 0],
       ])('%s', (fileName, expectedOutput) => {
         const headings = []
 
@@ -850,6 +851,7 @@ The multiple Tabs tags in one HTML node above should be handled correctly.
       test.each([
         ['tutorial-terraform-aks.mdx', 1],
         ['tutorial-terraform-gke.mdx', 1],
+        ['tutorials-nomad-format-output-with-templates.mdx', 1],
       ])('%s', (fileName, expectedOutput) => {
         const headings = []
 
@@ -871,6 +873,7 @@ The multiple Tabs tags in one HTML node above should be handled correctly.
       test.each([
         ['tutorial-terraform-aks.mdx', 2],
         ['tutorial-terraform-gke.mdx', 2],
+        ['tutorials-nomad-format-output-with-templates.mdx', 2],
       ])('%s', (fileName, expectedOutput) => {
         const headings = []
 
