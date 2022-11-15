@@ -1,0 +1,414 @@
+<!--
+
+Copied from:
+
+https://github.com/hashicorp/tutorials/blob/50b0284436561e6cbf402fb2aa25b5c0a15ef604/content/tutorials/terraform/gke.mdx
+
+-->
+
+The Google Kubernetes Engine (GKE) is a fully managed Kubernetes service for deploying, managing, and scaling containerized applications on Google Cloud.
+
+In this tutorial, you will deploy a 2-node separately managed node pool GKE cluster using Terraform. This GKE cluster will be distributed across multiple zones for high availability.
+Then, you will configure `kubectl` using Terraform output to deploy a Kubernetes dashboard on the cluster.
+
+~> **Warning!** Google Cloud charges
+[about ten cents per hour management fee for each GKE cluster](https://cloud.google.com/kubernetes-engine/pricing), in addition to the cluster's resource costs.
+One zonal cluster per billing account is free. As a result, you may be charged
+to run these examples. The most you should be charged should only be a few
+dollars, but we're not responsible for any charges that may incur.
+
+-> **Tip:** This example configuration provisions a GKE cluster with 2 nodes so it's under the default `IN_USE_ADDRESSES` quota. This configuration should be used as a learning exercise only — do not run a 2-node cluster in production.
+
+### Why deploy with Terraform?
+
+While you could use the built-in GCP provisioning processes (UI, SDK/CLI) for GKE clusters, Terraform provides you with several benefits:
+
+- **Unified Workflow** - If you are already deploying infrastructure to Google Cloud with Terraform, your GKE cluster can fit into that workflow. You can also deploy applications into your GKE cluster using Terraform.
+
+- **Full Lifecycle Management** - Terraform doesn't only create resources, it updates, and deletes tracked resources without requiring you to inspect the API to identify those resources.
+
+- **Graph of Relationships** - Terraform understands dependency relationships between resources. For example, if you require a separately managed node pool, Terraform won't attempt to create the node pool if the GKE cluster failed to create.
+
+## Prerequisites
+
+The tutorial assumes some basic familiarity with Kubernetes and `kubectl` but does
+not assume any pre-existing deployment.
+
+It also assumes that you are familiar with the usual Terraform plan/apply
+workflow. If you're new to Terraform itself, refer first to the Getting Started
+[tutorial](/terraform/tutorials/gcp-get-started).
+
+For this tutorial, you will need
+
+- a [GCP account](https://console.cloud.google.com/)
+- a configured gcloud SDK
+- `kubectl`
+
+<Tabs>
+<Tab heading="Configured gcloud SDK">
+
+
+In order for Terraform to run operations on your behalf, you must install and
+configure the `gcloud` SDK tool. To install the `gcloud` SDK, follow
+[these instructions](https://cloud.google.com/sdk/docs/quickstarts) or choose a package manager based on your operating system.
+
+<Tabs>
+<Tab heading="macOS install with Homebrew" group="mac">
+
+
+You can also use the package manager [`homebrew`](https://formulae.brew.sh/) to install the gcloud SDK.
+
+```shell-session
+$ brew install --cask google-cloud-sdk
+```
+
+</Tab>
+<Tab heading="Windows install with Chocolatey" group="windows">
+
+
+You can also use the package manager [`Chocolatey`](https://chocolatey.org/) to install the gcloud SDK.
+
+```shell-session
+$ choco install gcloudsdk
+```
+
+</Tab>
+</Tabs>
+
+
+After you've installed the `gcloud` SDK, initialize it by running the following
+command.
+
+```shell-session
+$ gcloud init
+```
+
+This will authorize the SDK to access GCP using your user account credentials
+and add the SDK to your PATH. This steps requires you to login and select the
+project you want to work in. Finally, add your account to the Application
+Default Credentials (ADC). This will allow Terraform to access these credentials
+to provision resources on GCloud.
+
+```shell-session
+$ gcloud auth application-default login
+```
+
+</Tab>
+<Tab heading="kubectl">
+
+
+To install the `kubectl` (Kubernetes CLI), follow [these instructions](https://kubernetes.io/docs/tasks/tools/install-kubectl/) or choose a package manager based on your operating system.
+
+<Tabs>
+<Tab heading="macOS install with Homebrew" group="mac">
+
+
+Use the package manager [`homebrew`](https://formulae.brew.sh/) to install `kubectl`.
+
+```shell-session
+$ brew install kubernetes-cli
+```
+
+</Tab>
+<Tab heading="Windows install with Chocolatey" group="windows">
+
+
+Use the package manager [`Chocolatey`](https://chocolatey.org/) to install `kubectl`.
+
+```shell-session
+$ choco install kubernetes-cli
+```
+
+</Tab>
+</Tabs>
+</Tab>
+</Tabs>
+
+
+## Set up and initialize your Terraform workspace
+
+In your terminal, clone the [following repository](https://github.com/hashicorp/learn-terraform-provision-gke-cluster).
+It contains the example configuration used in this tutorial.
+
+```shell-session
+$ git clone https://github.com/hashicorp/learn-terraform-provision-gke-cluster
+```
+
+You can explore this repository by changing directories or navigating in your UI.
+
+```shell-session
+$ cd learn-terraform-provision-gke-cluster
+```
+
+In here, you will find four files used to provision a VPC, subnets and a GKE cluster.
+
+1. [`vpc.tf`](https://github.com/hashicorp/learn-terraform-provision-gke-cluster/blob/main/vpc.tf) provisions a VPC and subnet. A new VPC
+   is created for this tutorial so it doesn't impact your existing cloud environment
+   and resources. This file outputs `region`.
+
+1. [`gke.tf`](https://github.com/hashicorp/learn-terraform-provision-gke-cluster/blob/main/gke.tf) provisions a GKE cluster and a
+   separately managed node pool (recommended). Separately managed node pools
+   allows you to customize your Kubernetes cluster profile — this is
+   useful if some Pods require more resources than others. You can learn more
+   [here](https://cloud.google.com/kubernetes-engine/docs/concepts/node-pools).
+   The number of nodes in the node pool is defined also defined
+   [here](https://github.com/hashicorp/learn-terraform-provision-gke-cluster/blob/main/gke.tf#L11).
+
+1. [`terraform.tfvars`](https://github.com/hashicorp/learn-terraform-provision-gke-cluster/blob/main/terraform.tfvars) is a template for the `project_id` and `region` variables.
+
+1. [`versions.tf`](https://github.com/hashicorp/learn-terraform-provision-gke-cluster/blob/main/versions.tf) sets the Terraform version to at least 0.14.
+
+### Update your `terraform.tfvars` file
+
+Replace the values in your `terraform.tfvars` file with your `project_id` and
+`region`. Terraform will use these values to target your project when
+provisioning your resources. Your `terraform.tfvars` file should look like the
+following.
+
+```plaintext
+# terraform.tfvars
+project_id = "REPLACE_ME"
+region     = "us-central1"
+```
+
+You can find the project your `gcloud` is configured to with this command.
+
+```shell-session
+$ gcloud config get-value project
+```
+
+The region has been defaulted to `us-central1`; you can find a full list of
+gcloud regions [here](https://cloud.google.com/compute/docs/regions-zones).
+
+### Initialize Terraform workspace
+
+After you have saved your customized variables file, initialize your Terraform
+workspace, which will download the provider and initialize it with the values
+provided in your `terraform.tfvars` file.
+
+```shell-session
+$ terraform init
+
+Initializing the backend...
+
+Initializing provider plugins...
+- Reusing previous version of hashicorp/google from the dependency lock file
+- Installing hashicorp/google v4.27.0...
+- Installed hashicorp/google v4.27.0 (signed by HashiCorp)
+
+Terraform has been successfully initialized!
+
+You may now begin working with Terraform. Try running "terraform plan" to see
+any changes that are required for your infrastructure. All Terraform commands
+should now work.
+
+If you ever set or change modules or backend configuration for Terraform,
+rerun this command to reinitialize your working directory. If you forget, other
+commands will detect it and remind you to do so if necessary.
+```
+
+## Provision the GKE cluster
+
+-> **NOTE** [Compute Engine API](https://console.developers.google.com/apis/api/compute.googleapis.com/overview)
+and [Kubernetes Engine API](https://console.cloud.google.com/apis/api/container.googleapis.com/overview)
+are required for `terraform apply` to work on this configuration.
+Enable both APIs for your Google Cloud project before continuing.
+
+In your initialized directory, run `terraform apply` and review the planned actions.
+Your terminal output should indicate the plan is running and what resources will be created.
+
+```shell-session
+$ terraform apply
+An execution plan has been generated and is shown below.
+Resource actions are indicated with the following symbols:
+  + create
+
+Terraform will perform the following actions:
+
+## ...
+
+Plan: 4 to add, 0 to change, 0 to destroy.
+
+## ...
+```
+
+You can see this terraform apply will provision a VPC, subnet, GKE Cluster and a
+GKE node pool. Confirm the apply with a `yes`.
+
+This process should take approximately 10 minutes. Upon successful application,
+your terminal prints the outputs defined in `vpc.tf` and `gke.tf`.
+
+```plaintext
+Apply complete! Resources: 4 added, 0 changed, 0 destroyed.
+
+Outputs:
+
+kubernetes_cluster_host = "35.232.196.187"
+kubernetes_cluster_name = "dos-terraform-edu-gke"
+project_id = "dos-terraform-edu"
+region = "us-central1"
+```
+
+## Configure kubectl
+
+Now that you've provisioned your GKE cluster, you need to configure `kubectl`.
+
+Run the following command to retrieve the access credentials for your cluster
+and automatically configure `kubectl`.
+
+```shell-session
+$ gcloud container clusters get-credentials $(terraform output -raw kubernetes_cluster_name) --region $(terraform output -raw region)
+Fetching cluster endpoint and auth data.
+kubeconfig entry generated for dos-terraform-edu-gke.
+```
+
+The
+[Kubernetes cluster name](https://github.com/hashicorp/learn-terraform-provision-gke-cluster/blob/main/gke.tf#L63)
+and [region](https://github.com/hashicorp/learn-terraform-provision-gke-cluster/blob/main/vpc.tf#L29)
+correspond to the output variables showed after the successful Terraform run.
+
+### Troubleshooting
+
+You may see the following warning message when you try to retrieve your cluster
+credentials. This may be because your Kubernetes cluster is still
+initializing/updating. If this happens, you can still proceed to the next step.
+
+```plaintext
+WARNING: cluster dos-terraform-edu-gke is not running. The kubernetes API may not be available.
+```
+
+## Deploy and access Kubernetes Dashboard
+
+To verify your cluster is correctly configured and running, you will deploy the
+Kubernetes dashboard and navigate to it in your local browser.
+
+While you can deploy the Kubernetes dashboard using Terraform, `kubectl` is used in this tutorial so you don't need to configure your Terraform Kubernetes Provider.
+
+The following command will schedule the resources necessary for the dashboard.
+
+```shell-session
+$ kubectl apply -f https://raw.githubusercontent.com/kubernetes/dashboard/v2.0.0-beta8/aio/deploy/recommended.yaml
+
+namespace/kubernetes-dashboard created
+serviceaccount/kubernetes-dashboard created
+service/kubernetes-dashboard created
+secret/kubernetes-dashboard-certs created
+secret/kubernetes-dashboard-csrf created
+secret/kubernetes-dashboard-key-holder created
+configmap/kubernetes-dashboard-settings created
+role.rbac.authorization.k8s.io/kubernetes-dashboard created
+clusterrole.rbac.authorization.k8s.io/kubernetes-dashboard created
+rolebinding.rbac.authorization.k8s.io/kubernetes-dashboard created
+clusterrolebinding.rbac.authorization.k8s.io/kubernetes-dashboard created
+deployment.apps/kubernetes-dashboard created
+service/dashboard-metrics-scraper created
+deployment.apps/dashboard-metrics-scraper created
+```
+
+Now, create a proxy server that will allow you to navigate to the dashboard
+from the browser on your local machine. This will continue running until you stop the process by pressing `CTRL + C`.
+
+```shell-session
+$ kubectl proxy
+```
+
+You should be able to access the Kubernetes dashboard [here](http://127.0.0.1:8001/api/v1/namespaces/kubernetes-dashboard/services/https:kubernetes-dashboard:/proxy/)
+(`http://127.0.0.1:8001/api/v1/namespaces/kubernetes-dashboard/services/https:kubernetes-dashboard:/proxy/`).
+
+![GKE Auth Page](/img/terraform/kubernetes/gke-k8s-dashboard-auth.png)
+
+## Authenticate to Kubernetes Dashboard
+
+To use the Kubernetes dashboard, you need to create a `ClusterRoleBinding` and
+provide an authorization token. This gives the `cluster-admin` permission to
+access the `kubernetes-dashboard`.
+Authenticating using `kubeconfig` is **not** an option. You can read more about
+it in the [Kubernetes documentation](https://kubernetes.io/docs/tasks/access-application-cluster/web-ui-dashboard/#accessing-the-dashboard-ui).
+
+In another terminal (do not close the `kubectl proxy` process), create the
+`ClusterRoleBinding` resource.
+
+```shell-session
+$ kubectl apply -f https://raw.githubusercontent.com/hashicorp/learn-terraform-provision-gke-cluster/main/kubernetes-dashboard-admin.rbac.yaml
+```
+
+Then, generate the authorization token.
+
+```shell-session
+$ kubectl -n kube-system describe secret $(kubectl -n kube-system get secret | grep service-controller-token | awk '{print $1}')
+
+Name:         service-controller-token-m8m7j
+Namespace:    kube-system
+Labels:       <none>
+Annotations:  kubernetes.io/service-account.name: service-controller
+              kubernetes.io/service-account.uid: bc99ddad-6be7-11ea-a3c7-42010a800017
+
+Type:  kubernetes.io/service-account-token
+
+Data
+====
+token:      eyJhbGciOiJSUzI1NiIsImtpZCI6IiJ9...
+ca.crt:     1119 bytes
+namespace:  11 bytes
+```
+
+Select "Token" on the Dashboard UI then copy and paste the entire token you
+receive into the
+[dashboard authentication screen](http://127.0.0.1:8001/api/v1/namespaces/kubernetes-dashboard/services/https:kubernetes-dashboard:/proxy/)
+to sign in. You are now signed in to the dashboard for your Kubernetes cluster.
+
+![GKE Dashboard](/img/terraform/kubernetes/gke-k8s-dashboard.png)
+
+### (Optional) GKE nodes and node pool
+
+On the Dashboard UI, click _Nodes_ on the left hand menu.
+
+Notice there are 6 nodes in your cluster, even though
+[`gke_num_nodes` in your `gke.tf` file](https://github.com/hashicorp/learn-terraform-provision-gke-cluster/blob/main/gke.tf#L11)
+was set to 2. This is because a node pool was provisioned in each of the three zones
+within the region to provide high availability.
+
+```shell-session
+$ gcloud container clusters describe dos-terraform-edu-gke --region us-central1 --format='default(locations)'
+locations:
+- us-central1-b
+- us-central1-f
+- us-central1-c
+```
+
+-> **NOTE** Replace `dos-terraform-edu-gke` with the `kubernetes_cluster_name` value from your Terraform output.
+
+![GKE Dashboard](/img/terraform/kubernetes/gke-k8s-dashboard-nodes.png)
+
+## Clean up your workspace
+
+Congratulations, you have provisioned a GKE cluster with a separated node pool,
+configured `kubectl`, and deployed the Kubernetes dashboard.
+
+If you'd like to learn how to manage your GKE cluster using the Terraform
+Kubernetes Provider, leave your cluster running and continue to the
+[Kubernetes provider tutorial](/terraform/tutorials/kubernetes/kubernetes-provider).
+
+~> **Note:** This directory is **only** used to provision a GKE cluster with Terraform.
+By keeping the Terraform configuration for provisioning a Kubernetes cluster and
+managing a Kubernetes cluster resources separate, changes in one repository don't
+affect the other. In addition, the modularity makes the configuration more
+readable and enables you to scope different permissions to each workspace.
+
+If not, remember to destroy any resources you create once you are done with this
+tutorial. Run the `destroy` command and confirm with `yes` in your terminal.
+
+```shell-session
+$ terraform destroy
+```
+
+## Next steps
+
+For more information on the GKE resource, please visit the
+[Google Cloud provider documentation](https://registry.terraform.io/providers/hashicorp/google/3.14.0/docs/resources/container_cluster).
+
+For steps on how to manage Kubernetes resources your GKE cluster or any other
+already created Kubernetes cluster, visit the
+[Kubernetes provider tutorial](/terraform/tutorials/kubernetes/kubernetes-provider).
+
+For a more in-depth Kubernetes example, [Deploy Consul and Vault on a Kubernetes Cluster using Run Triggers](/terraform/tutorials/kubernetes/kubernetes-consul-vault-pipeline) (this tutorial is GKE based).

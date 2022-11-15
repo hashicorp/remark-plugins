@@ -1,8 +1,6 @@
 const generateSlug = require('../../generate_slug')
 const map = require('unist-util-map')
 const is = require('unist-util-is')
-const remark = require('remark')
-const stringify = require('remark-stringify')
 
 // This plugin adds anchor links to headlines and lists that begin with inline
 // code blocks.
@@ -28,17 +26,32 @@ module.exports = function anchorLinksPlugin({
 
     return map(tree, (node) => {
       /**
-       * Check if this node opens or closes <Tabs />.
-       * If it opens <Tabs>, increase the tabbedSectionDepth.
-       * If it closes </Tabs>, decrease the tabbedSectionDepth.
+       * Check if the lines in this node open and/or close <Tabs />.
+       *  - If it opens <Tabs>, increase the tabbedSectionDepth.
+       *  - If it closes </Tabs>, decrease the tabbedSectionDepth.
+       *
+       * NOTE: Some nodes are multiple lines and have also have multiple
+       * opening/closing tags for <Tabs />.
+       *
+       * For example, here is a node that is 4 lines long, and each line must be
+       * checked at individually:
+       *
+       *    </Tab>
+       *    </Tabs>
+       *    </Tab>
+       *    </Tabs>
+       *
+       * Where this has happened in production:
+       *
+       * https://github.com/hashicorp/tutorials/blob/50b0284436561e6cbf402fb2aa25b5c0a15ef604/content/tutorials/terraform/aks.mdx?plain=1#L111-L114
        */
       const isHtmlOrJsxNode = node.type === 'html' || node.type === 'jsx'
       if (isHtmlOrJsxNode) {
         // Note that a single HTML node could potentially contain multiple tags
-        const openTagMatches = node.value.match(/\<Tabs/)
+        const openTagMatches = node.value.match(/\<Tabs/g)
         const openTagCount = openTagMatches ? openTagMatches.length : 0
         tabbedSectionDepth += openTagCount
-        const closeTagMatches = node.value.match(/\<\/Tabs/)
+        const closeTagMatches = node.value.match(/\<\/Tabs/g)
         const closeTagCount = closeTagMatches ? closeTagMatches.length : 0
         tabbedSectionDepth -= closeTagCount
       }

@@ -1,3 +1,4 @@
+const fs = require('fs')
 const remark = require('remark')
 const html = require('remark-html')
 const anchorLinks = require('./index.js')
@@ -821,6 +822,74 @@ The multiple Tabs tags in one HTML node above should be handled correctly.
       ].join('\n')
     )
     expect(headings).toMatchInlineSnapshot('Array []')
+  })
+
+  describe('fixture tests', () => {
+    describe('no nested headings', () => {
+      test.each([
+        ['tutorial-terraform-aks.mdx', 0],
+        ['tutorial-terraform-gke.mdx', 0],
+        ['tutorials-nomad-format-output-with-templates.mdx', 0],
+      ])('%s', (fileName, expectedOutput) => {
+        const headings = []
+
+        const filePath = `${process.cwd()}/plugins/anchor-links/fixtures/00-nested-headings/${fileName}`
+        const fileContents = fs.readFileSync(filePath).toString()
+        const fileLines = fileContents.split('\n')
+
+        execute(fileLines, { headings })
+
+        const nestedHeadings = headings.filter(
+          ({ tabbedSectionDepth }) =>
+            typeof tabbedSectionDepth === 'number' && tabbedSectionDepth > 0
+        )
+        expect(nestedHeadings.length).toBe(expectedOutput)
+      })
+    })
+
+    describe('one nested heading', () => {
+      test.each([
+        ['tutorial-terraform-aks.mdx', 1],
+        ['tutorial-terraform-gke.mdx', 1],
+        ['tutorials-nomad-format-output-with-templates.mdx', 1],
+      ])('%s', (fileName, expectedOutput) => {
+        const headings = []
+
+        const filePath = `${process.cwd()}/plugins/anchor-links/fixtures/01-nested-heading/${fileName}`
+        const fileContents = fs.readFileSync(filePath).toString()
+        const fileLines = fileContents.split('\n')
+
+        execute(fileLines, { headings })
+
+        const nestedHeadings = headings.filter(
+          ({ tabbedSectionDepth }) =>
+            typeof tabbedSectionDepth === 'number' && tabbedSectionDepth > 0
+        )
+        expect(nestedHeadings.length).toBe(expectedOutput)
+      })
+    })
+
+    describe('two nested headings', () => {
+      test.each([
+        ['tutorial-terraform-aks.mdx', 2],
+        ['tutorial-terraform-gke.mdx', 2],
+        ['tutorials-nomad-format-output-with-templates.mdx', 2],
+      ])('%s', (fileName, expectedOutput) => {
+        const headings = []
+
+        const filePath = `${process.cwd()}/plugins/anchor-links/fixtures/02-nested-headings/${fileName}`
+        const fileContents = fs.readFileSync(filePath).toString()
+        const fileLines = fileContents.split('\n')
+
+        execute(fileLines, { headings })
+
+        const nestedHeadings = headings.filter(
+          ({ tabbedSectionDepth }) =>
+            typeof tabbedSectionDepth === 'number' && tabbedSectionDepth > 0
+        )
+        expect(nestedHeadings.length).toBe(expectedOutput)
+      })
+    })
   })
 })
 
