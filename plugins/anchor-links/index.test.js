@@ -1,3 +1,5 @@
+const fs = require('fs')
+const path = require('path')
 const remark = require('remark')
 const html = require('remark-html')
 const anchorLinks = require('./index.js')
@@ -176,6 +178,41 @@ The multiple Tabs tags in one HTML node above should be handled correctly.
             "slug": "another-heading-after-tabs",
             "tabbedSectionDepth": 0,
             "title": "Another Heading After Tabs",
+          },
+        ]
+      `)
+    })
+
+    test('handles <Tabs /> nesting with multiple tags in a single HTML node', () => {
+      const headings = []
+      const fixtureFile = path.join(__dirname, './fixtures/nested-tabs.mdx')
+      const lines = fs.readFileSync(fixtureFile, 'utf8').split('\n')
+      execute(lines, { headings })
+      expect(headings).toMatchInlineSnapshot(`
+        Array [
+          Object {
+            "aliases": Array [],
+            "level": 1,
+            "permalinkSlug": "heading-one",
+            "slug": "heading-one",
+            "tabbedSectionDepth": 0,
+            "title": "Heading One",
+          },
+          Object {
+            "aliases": Array [],
+            "level": 2,
+            "permalinkSlug": "prerequisites",
+            "slug": "prerequisites",
+            "tabbedSectionDepth": 0,
+            "title": "Prerequisites",
+          },
+          Object {
+            "aliases": Array [],
+            "level": 2,
+            "permalinkSlug": "set-up-and-initialize-your-terraform-workspace",
+            "slug": "set-up-and-initialize-your-terraform-workspace",
+            "tabbedSectionDepth": 0,
+            "title": "Set up and initialize your Terraform workspace",
           },
         ]
       `)

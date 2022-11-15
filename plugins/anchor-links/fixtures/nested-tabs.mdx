@@ -1,0 +1,84 @@
+# Heading One
+
+This is some content sampled because it contains interesting tab nesting.
+
+## Prerequisites
+
+The tutorial assumes some basic familiarity with Kubernetes and `kubectl` but does
+not assume any pre-existing deployment.
+
+It also assumes that you are familiar with the usual Terraform plan/apply
+workflow. If you're new to Terraform itself, refer first to the Getting Started
+[tutorial](/terraform/tutorials/azure-get-started).
+
+For this tutorial, you will need
+
+- an [Azure account](https://portal.azure.com/#home)
+- a configured Azure CLI
+- `kubectl`
+
+<Tabs>
+<Tab heading="Configured Azure CLI">
+
+In order for Terraform to run operations on your behalf, you must install and
+configure the Azure CLI tool. To install the Azure CLI, follow
+[these instructions](https://docs.microsoft.com/en-us/cli/azure/install-azure-cli?view=azure-cli-latest) or choose a package manager based on your operating system.
+
+<Tabs>
+<Tab heading="macOS install with Homebrew" group="mac">
+
+You can also use the package manager [`homebrew`](https://formulae.brew.sh/) to install the Azure CLI.
+
+```shell-session
+$ brew install azure-cli
+```
+
+</Tab>
+<Tab heading="Windows install with Chocolatey" group="windows">
+
+You can also use the package manager [`Chocolatey`](https://chocolatey.org/) to install the Azure CLI.
+
+```shell-session
+$ choco install azure-cli
+```
+
+</Tab>
+</Tabs>
+
+After you've installed the Azure CLI, login into Azure by running:
+
+```shell-session
+$ az login
+```
+
+</Tab>
+<Tab heading="kubectl">
+
+To install the `kubectl` (Kubernetes CLI), follow [these instructions](https://kubernetes.io/docs/tasks/tools/install-kubectl/) or choose a package manager based on your operating system.
+
+<Tabs>
+<Tab heading="macOS install with Homebrew" group="mac">
+
+Use the package manager [`homebrew`](https://formulae.brew.sh/) to install `kubectl`.
+
+```shell-session
+$ brew install kubernetes-cli
+```
+
+</Tab>
+<Tab heading="Windows install with Chocolatey" group="windows">
+
+Use the package manager [`Chocolatey`](https://chocolatey.org/) to install `kubectl`.
+
+```shell-session
+$ choco install kubernetes-cli
+```
+
+</Tab>
+</Tabs>
+</Tab>
+</Tabs>
+
+## Set up and initialize your Terraform workspace
+
+This is some content after the tabs.
