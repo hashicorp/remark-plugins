@@ -35,10 +35,10 @@ module.exports = function anchorLinksPlugin({
       const isHtmlOrJsxNode = node.type === 'html' || node.type === 'jsx'
       if (isHtmlOrJsxNode) {
         // Note that a single HTML node could potentially contain multiple tags
-        const openTagMatches = node.value.match(/\<Tabs/)
+        const openTagMatches = node.value.match(/\<Tabs/g)
         const openTagCount = openTagMatches ? openTagMatches.length : 0
         tabbedSectionDepth += openTagCount
-        const closeTagMatches = node.value.match(/\<\/Tabs/)
+        const closeTagMatches = node.value.match(/\<\/Tabs/g)
         const closeTagCount = closeTagMatches ? closeTagMatches.length : 0
         tabbedSectionDepth -= closeTagCount
       }
