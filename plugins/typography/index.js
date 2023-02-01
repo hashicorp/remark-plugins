@@ -1,3 +1,8 @@
+/**
+ * Copyright (c) HashiCorp, Inc.
+ * SPDX-License-Identifier: MPL-2.0
+ */
+
 const visit = require('unist-util-visit')
 
 module.exports = function typographyPlugin(options = {}) {

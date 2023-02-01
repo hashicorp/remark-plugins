@@ -1,3 +1,8 @@
+/**
+ * Copyright (c) HashiCorp, Inc.
+ * SPDX-License-Identifier: MPL-2.0
+ */
+
 const remark = require('remark')
 const codeBlockLinkable = require('./index.js')
 const unified = require('unified')

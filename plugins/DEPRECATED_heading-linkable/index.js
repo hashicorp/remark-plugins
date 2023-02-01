@@ -1,3 +1,8 @@
+/**
+ * Copyright (c) HashiCorp, Inc.
+ * SPDX-License-Identifier: MPL-2.0
+ */
+
 const generateSlug = require('../../generate_slug')
 const map = require('unist-util-map')
 const is = require('unist-util-is')
