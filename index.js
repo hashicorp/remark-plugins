@@ -1,3 +1,8 @@
+/**
+ * Copyright (c) HashiCorp, Inc.
+ * SPDX-License-Identifier: MPL-2.0
+ */
+
 const anchorLinks = require('./plugins/anchor-links')
 const paragraphCustomAlerts = require('./plugins/paragraph-custom-alerts')
 const typography = require('./plugins/typography')
