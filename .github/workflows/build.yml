@@ -1,0 +1,45 @@
+# Copyright (c) HashiCorp, Inc.
+# SPDX-License-Identifier: MPL-2.0
+
+name: Build
+on:
+  push:
+    branches:
+      - main
+jobs:
+  linux:
+    defaults:
+      run:
+        working-directory: '~/repo'
+    runs-on: ubuntu-latest
+    container:
+      image: node:latest
+    steps:
+      - uses: actions/checkout@24cb9080177205b6e8c946b17badbe402adc938f # v3.4.0
+      - name: restore_cache
+        uses: actions/cache@88522ab9f39a2ea568f7027eddc7d8d8bc9d59c8 # v3.3.1
+        with:
+          key: v2-dependencies-linux-{{ checksum "package.json" }}
+          restore-keys: |-
+            v2-dependencies-linux-{{ checksum "package.json" }}
+            v2-dependencies-liux-
+          path: node_modules
+      - run: npm install
+      - run: npm test
+  windows:
+    defaults:
+      run:
+        working-directory: '~/repo'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@24cb9080177205b6e8c946b17badbe402adc938f # v3.4.0
+      - name: restore_cache
+        uses: actions/cache@88522ab9f39a2ea568f7027eddc7d8d8bc9d59c8 # v3.3.1
+        with:
+          key: v2-dependencies-win-{{ checksum "package.json" }}
+          restore-keys: |-
+            v2-dependencies-win-{{ checksum "package.json" }}
+            v2-dependencies-win-
+          path: node_modules
+      - run: npm install
+      - run: npm test
